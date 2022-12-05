@@ -1,31 +1,48 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
+
 package cmd
 
 import (
 	"os"
+	"strings"
+
+	"runtime/debug"
 
 	"github.com/spf13/cobra"
 )
 
-
+var version string
 
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "cloud-director-cli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+var (
+	verbose bool
+	rootCmd = &cobra.Command{
+		Use:     "cd-cli",
+		Version: getVersion(),
+		Short:   "Simple cli tool that communicates with cloud director",
+		Long: `cd-cli is primarily meant to be used to clean the leftovers from VCD console.
+These may contain VMs, volumes, etc.
+	
+	For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
-}
+		cd-cli clean mycluster`,
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		// Run: func(cmd *cobra.Command, args []string) { },
+	}
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -45,7 +62,22 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Use verbose output")
+
 }
 
+func getVersion() string {
+	if version == "" {
+		bi, ok := debug.ReadBuildInfo()
+		if !ok {
+			return ""
+		}
 
+		for _, dep := range bi.Deps {
+			if strings.Contains(dep.Path, "cloud-director-cli") {
+				version = dep.Version
+			}
+		}
+	}
+	return version
+}
