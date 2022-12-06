@@ -46,13 +46,13 @@ type Cache struct {
 	client  *vcdsdk.Client
 }
 
-func (cache *Cache) lazyInit(verbose bool) {
+func (cache *Cache) lazyInit(verboseClient bool) {
 	cache.atStart.Do(func() {
 		cfg, err := parseConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		cache.client, err = makeClient(cfg, verbose)
+		cache.client, err = makeClient(cfg, verboseClient)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -85,12 +85,12 @@ func parseConfig() (*Config, error) {
 	return data, nil
 }
 
-func makeClient(cfg *Config, verbose bool) (*vcdsdk.Client, error) {
+func makeClient(cfg *Config, verboseClient bool) (*vcdsdk.Client, error) {
 	_, err := url.ParseRequestURI(cfg.Site)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse site url: %s", err)
 	}
-	if !verbose { // the underlying vcd client prints a lot of messages to stderr
+	if !verboseClient { // the underlying vcd client prints a lot of messages to stderr
 		os.Stderr = nil
 	}
 	client, err := vcdsdk.NewVCDClientFromSecrets(cfg.Site, cfg.Org,
@@ -102,7 +102,7 @@ func makeClient(cfg *Config, verbose bool) (*vcdsdk.Client, error) {
 	return client, nil
 }
 
-func (cache *Cache) CachedClient(verbose bool) (*vcdsdk.Client, error) {
-	cache.lazyInit(verbose)
+func (cache *Cache) CachedClient(verboseClient bool) (*vcdsdk.Client, error) {
+	cache.lazyInit(verboseClient)
 	return cache.client, nil
 }

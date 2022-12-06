@@ -21,29 +21,17 @@ import (
 	"log"
 )
 
-func ListVMs(verboseClient bool, onlyTemplates bool) []*types.QueryResultVMRecordType {
+func ListvApps(verboseClient bool) []*types.ResourceReference {
 	cache := Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
 		log.Fatal(e)
 	}
-	var filter types.VmQueryFilter
-	if onlyTemplates {
-		filter = types.VmQueryFilterOnlyTemplates
-	} else {
-		filter = types.VmQueryFilterOnlyDeployed
-	}
-	vms, err := c.VDC.QueryVmList(filter)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return vms
+	vapps := c.VDC.GetVappList()
+	return vapps
 }
 
-func DeleteVMs(names []string, vapp string, yes bool, verboseClient bool) error {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a VM")
-	}
+func DeletevApp(name string, yes bool, verboseClient bool) error {
 	cache := Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
@@ -54,7 +42,7 @@ func DeleteVMs(names []string, vapp string, yes bool, verboseClient bool) error 
 		log.Fatal(err)
 	}
 	if !yes {
-		fmt.Printf("Are you sure you want to delete following VMs: %v [y/n]?\n", names)
+		fmt.Printf("Are you sure you want to delete vApp '%s'[y/n]?\n", name)
 		var char rune
 		_, err := fmt.Scanf("%c", &char)
 		if err != nil {
@@ -64,26 +52,24 @@ func DeleteVMs(names []string, vapp string, yes bool, verboseClient bool) error 
 			return nil
 		}
 	}
-	for _, vm := range names {
-		m.DeleteVM(vapp, vm)
+	err2 := m.DeleteVApp(name)
+	if err2 != nil {
+		log.Fatal(err2)
 	}
 	return nil
 }
 
-func PrintVMs(verbose bool, verboseClient bool, onlyTemplates bool, vapp string) error {
+func PrintvApps(verbose bool, verboseClient bool, onlyTemplates bool, vapp string) error {
 	var headerPrinted bool
-	for _, vm := range ListVMs(verboseClient, onlyTemplates) {
-		if vapp != "" && vm.ContainerName != vapp {
-			continue
-		}
+	for _, vapp := range ListvApps(verboseClient) {
 		if !verbose {
-			fmt.Println(vm.Name)
+			fmt.Println(vapp.Name)
 		} else {
 			if !headerPrinted {
-				fmt.Printf("%-35s\t%-16s\t%-10s\t%s\t\n", "NAME", "VAPP", "STATUS", "DEPLOYED")
+				fmt.Printf("%-35s\t%-16s\t\n", "NAME", "ID")
 				headerPrinted = true
 			}
-			fmt.Printf("%-35s\t%-16s\t%-10s\t%t\t\n", vm.Name, vm.ContainerName, vm.Status, vm.Deployed)
+			fmt.Printf("%-35s\t%-16s\t\n", vapp.Name, vapp.ID)
 		}
 	}
 	return nil

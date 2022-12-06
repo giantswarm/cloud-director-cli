@@ -5,7 +5,7 @@
 
 PACKAGE_DIR    := ./bin-dist
 
-APPLICATION    := $(shell go list -m | cut -d '/' -f 3)
+APPLICATION    := cd-cli
 BUILDTIMESTAMP := $(shell date -u '+%FT%TZ')
 GITSHA1        := $(shell git rev-parse --verify HEAD)
 MODULE         := $(shell go list -m)

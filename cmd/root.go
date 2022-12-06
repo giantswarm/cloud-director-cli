@@ -27,8 +27,9 @@ var version string
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	verbose bool
-	rootCmd = &cobra.Command{
+	verbose       bool
+	verboseClient bool
+	rootCmd       = &cobra.Command{
 		Use:     "cd-cli",
 		Version: getVersion(),
 		Short:   "Simple cli tool that communicates with cloud director",
@@ -63,6 +64,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Use verbose output")
+	rootCmd.PersistentFlags().BoolVar(&verboseClient, "verboseClient", false, "Use even more verbose output")
 
 }
 

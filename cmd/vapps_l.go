@@ -20,21 +20,16 @@ import (
 )
 
 var (
-	onlyTemplates bool
-	yes           bool
-	delVmsCmd     = &cobra.Command{
-		Use:   "vms",
-		Short: "Delete the VMs",
-		Long:  `Delete the VMs in the cloud director of a given vApp`,
+	listVappsCmd = &cobra.Command{
+		Use:   "vapps",
+		Short: "List all the vApps",
+		Long:  `List all the vApps in the cloud director`,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVMs(args, vapp, yes, verboseClient)
+			vcd.PrintvApps(verbose, verboseClient, onlyTemplates, vapp)
 		},
 	}
 )
 
 func init() {
-	cleanCmd.AddCommand(delVmsCmd)
-	delVmsCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "vApp whose VMs will be deleted")
-	delVmsCmd.MarkFlagRequired("vapp")
-	delVmsCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
+	listCmd.AddCommand(listVappsCmd)
 }
