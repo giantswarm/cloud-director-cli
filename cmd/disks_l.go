@@ -19,18 +19,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// listVmsCmd represents the vms command
 var (
-	listVappsCmd = &cobra.Command{
-		Use:     "vapps",
-		Aliases: []string{"vapp"},
-		Short:   "List all the vApps",
-		Long:    `List all the vApps in the cloud director`,
+	listDisksCmd = &cobra.Command{
+		Use:     "disks",
+		Aliases: []string{"disk"},
+		Short:   "List all the disks",
+		Long:    `List all the disks in the cloud director`,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintvApps(verbose, verboseClient, onlyTemplates, vapp)
+			vcd.PrintDisks(verbose, verboseClient)
 		},
 	}
 )
 
 func init() {
-	listCmd.AddCommand(listVappsCmd)
+	listCmd.AddCommand(listDisksCmd)
+	listDisksCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "Only VMs/templates of this vAPP will be listed")
+	listDisksCmd.Flags().BoolVarP(&onlyTemplates, "onlyTemplates", "t", false, "List only templates")
 }

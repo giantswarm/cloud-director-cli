@@ -23,9 +23,10 @@ import (
 var (
 	vapp       string
 	listVmsCmd = &cobra.Command{
-		Use:   "vms",
-		Short: "List all the VMs",
-		Long:  `List all the VMs in the cloud director (or vm templates)`,
+		Use:     "vms",
+		Aliases: []string{"vm"},
+		Short:   "List all the VMs",
+		Long:    `List all the VMs in the cloud director (or vm templates)`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintVMs(verbose, verboseClient, onlyTemplates, vapp)
 		},

@@ -19,23 +19,29 @@ import (
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
+	"net/url"
 )
 
-func ListvApps(verboseClient bool) []*types.ResourceReference {
+func ListDisks(verboseClient bool) []*types.DiskRecordType {
 	cache := Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
 		log.Fatal(e)
 	}
-	vapps := c.VDC.GetVappList()
-	return vapps
+	filter := "vdc==" + url.QueryEscape(c.VDC.Vdc.HREF)
+	notEncodedParams := map[string]string{"type": "disk", "filter": filter, "filterEncoded": "true"}
+	results, err := c.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return results.Results.DiskRecord
 }
 
-func DeletevApp(names []string, yes bool, verboseClient bool) error {
+func DeleteDisks(names []string, vapp string, yes bool, verboseClient bool) error {
 	if len(names) == 0 {
-		log.Fatal("Provide a name of the vApp")
+		log.Fatal("Provide at least 1 name of a VM")
 	}
-	name := names[0]
 	cache := Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
@@ -46,7 +52,7 @@ func DeletevApp(names []string, yes bool, verboseClient bool) error {
 		log.Fatal(err)
 	}
 	if !yes {
-		fmt.Printf("Are you sure you want to delete vApp '%s'[y/n]?\n", name)
+		fmt.Printf("Are you sure you want to delete following VMs: %v [y/n]?\n", names)
 		var char rune
 		_, err := fmt.Scanf("%c", &char)
 		if err != nil {
@@ -56,24 +62,23 @@ func DeletevApp(names []string, yes bool, verboseClient bool) error {
 			return nil
 		}
 	}
-	err2 := m.DeleteVApp(name)
-	if err2 != nil {
-		log.Fatal(err2)
+	for _, vm := range names {
+		m.DeleteVM(vapp, vm)
 	}
 	return nil
 }
 
-func PrintvApps(verbose bool, verboseClient bool, onlyTemplates bool, vapp string) error {
+func PrintDisks(verbose bool, verboseClient bool) error {
 	var headerPrinted bool
-	for _, vapp := range ListvApps(verboseClient) {
+	for _, d := range ListDisks(verboseClient) {
 		if !verbose {
-			fmt.Println(vapp.Name)
+			fmt.Println(d.Name)
 		} else {
 			if !headerPrinted {
-				fmt.Printf("%-35s\t%-16s\t\n", "NAME", "ID")
+				fmt.Printf("%-45s\t%-10s\t%-10s\t%s\t%-10s\t\n", "NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE")
 				headerPrinted = true
 			}
-			fmt.Printf("%-35s\t%-16s\t\n", vapp.Name, vapp.ID)
+			fmt.Printf("%-45s\t%-10d\t%-10s\t%d\t%-10s\t\n", d.Name, d.SizeMb, d.Status, d.AttachedVmCount, d.BusTypeDesc)
 		}
 	}
 	return nil

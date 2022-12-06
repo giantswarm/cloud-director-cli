@@ -23,9 +23,10 @@ var (
 	onlyTemplates bool
 	yes           bool
 	delVmsCmd     = &cobra.Command{
-		Use:   "vms",
-		Short: "Delete the VMs",
-		Long:  `Delete the VMs in the cloud director of a given vApp`,
+		Use:     "vms -a vAppName VMname... ",
+		Aliases: []string{"vm"},
+		Short:   "Delete the VMs",
+		Long:    `Delete the VMs in the cloud director of a given vApp`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.DeleteVMs(args, vapp, yes, verboseClient)
 		},

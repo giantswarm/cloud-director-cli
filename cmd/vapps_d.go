@@ -20,17 +20,17 @@ import (
 )
 
 var (
-	listVappsCmd = &cobra.Command{
-		Use:     "vapps",
-		Aliases: []string{"vapp"},
-		Short:   "List all the vApps",
-		Long:    `List all the vApps in the cloud director`,
+	delVappsCmd = &cobra.Command{
+		Use:     "vapp name",
+		Aliases: []string{"vapps"},
+		Short:   "Delete specified vApp",
+		Long:    `Delete specified vApp and all its VMs`,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintvApps(verbose, verboseClient, onlyTemplates, vapp)
+			vcd.DeletevApp(args, yes, verboseClient)
 		},
 	}
 )
 
 func init() {
-	listCmd.AddCommand(listVappsCmd)
+	cleanCmd.AddCommand(delVappsCmd)
 }
