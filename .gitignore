@@ -1,3 +1,6 @@
 # binaries
 cloud-director-cli*
 cd-cli*
+
+# goreleaser
+/dist

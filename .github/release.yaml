@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  GOLANG_VERSION: 1.19.1
+
+jobs:
+  release:
+    name: Release & Sign images
+    runs-on: ubuntu-20.04
+    env:
+      COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@c4a742cab115ed795e34d4513e2cf7d472deb55f # tag=v3
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@7bca8b41164994a7dc93749d266e2f1db492f8a2
+        with:
+          cosign-release: 'v1.12.1'
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@b7e8507c6a3c89b7099a0198366d862c8f3ad8f1 # tag=v0.13.0
+
+      - name: Install signing key
+        run: |
+          echo '${{ secrets.COSIGN_PRIVATE_KEY }}' > cosign.key
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # tag=v3
+        with:
+          version: v1.9.2
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASER_TOKEN }}
