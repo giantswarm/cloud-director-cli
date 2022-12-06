@@ -21,19 +21,19 @@ import (
 
 // listVmsCmd represents the vms command
 var (
+	unattached   bool
 	listDisksCmd = &cobra.Command{
 		Use:     "disks",
 		Aliases: []string{"disk"},
 		Short:   "List all the disks",
 		Long:    `List all the disks in the cloud director`,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintDisks(verbose, verboseClient)
+			vcd.PrintDisks(verbose, verboseClient, unattached)
 		},
 	}
 )
 
 func init() {
 	listCmd.AddCommand(listDisksCmd)
-	listDisksCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "Only VMs/templates of this vAPP will be listed")
-	listDisksCmd.Flags().BoolVarP(&onlyTemplates, "onlyTemplates", "t", false, "List only templates")
+	listDisksCmd.Flags().BoolVarP(&unattached, "unattached", "u", false, "Only unattached disks will be listed")
 }

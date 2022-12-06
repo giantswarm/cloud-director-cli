@@ -68,9 +68,12 @@ func DeleteDisks(names []string, vapp string, yes bool, verboseClient bool) erro
 	return nil
 }
 
-func PrintDisks(verbose bool, verboseClient bool) error {
+func PrintDisks(verbose bool, verboseClient bool, unattached bool) error {
 	var headerPrinted bool
 	for _, d := range ListDisks(verboseClient) {
+		if unattached && d.AttachedVmCount > 0 {
+			continue
+		}
 		if !verbose {
 			fmt.Println(d.Name)
 		} else {
