@@ -4,3 +4,6 @@ cd-cli*
 
 # goreleaser
 /dist
+
+# cosign
+/cosign.key
