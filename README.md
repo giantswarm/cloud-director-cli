@@ -4,8 +4,15 @@ Simple CLI tool for interfacing with Cloud Director.
 
 ## Installation
 
-Download the latest binary for your platform at https://github.com/giantswarm/cloud-director-cli/releases and put it to
-your `$PATH`.
+### Brew
+
+```bash
+brew tap giantswarm/cd-cli
+brew install cd-cli
+```
+
+Or alternatively download the latest binary for your platform at https://github.com/giantswarm/cloud-director-cli/releases
+and put it to your `$PATH`.
 
 ### Config
 

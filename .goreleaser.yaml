@@ -80,8 +80,9 @@ brews:
     tap:
       owner: giantswarm
       name: homebrew-cd-cli
-    download_strategy: CurlDownloadStrategy
     license: "Apache-2.0"
+    install: |
+      bin.install stable.url.split("/")[-1] => "cd-cli"
 
 archives:
   - id: binary
