@@ -74,6 +74,15 @@ signs:
       - '--output-certificate=${certificate}'
       - '--output-signature=${signature}'
       - '${artifact}'
+brews:
+  - ids:
+      - binary
+    tap:
+      owner: giantswarm
+      name: homebrew-cd-cli
+    download_strategy: CurlDownloadStrategy
+    license: "Apache-2.0"
+
 archives:
   - id: binary
     format: binary

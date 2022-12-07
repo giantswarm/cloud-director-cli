@@ -4,6 +4,19 @@ Simple CLI tool for interfacing with Cloud Director.
 
 ## Installation
 
+Download the latest binary for your platform at https://github.com/giantswarm/cloud-director-cli/releases and put it to
+your `$PATH`.
+
+### Config
+
+```bash
+cat ~/.cd-cli/config.yaml
+refreshToken: ***
+site: https://vmware.ikoula.com
+org: giantswarm
+ovdc: vDC 73640
+```
+
 ## Examples
 
 List all the VMs:
