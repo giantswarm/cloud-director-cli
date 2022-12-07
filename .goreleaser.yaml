@@ -9,6 +9,7 @@ builds:
     binary: ./bin/cd-cli
     goos:
       - linux
+      - darwin
     goarch:
       - amd64
       - arm64
