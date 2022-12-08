@@ -26,7 +26,20 @@ var (
 		Use:     "vms",
 		Aliases: []string{"vm"},
 		Short:   "List all the VMs",
-		Long:    `List all the VMs in the cloud director (or vm templates)`,
+		Long: `List all the VMs in the cloud director (or vm templates)
+
+	Examples:
+	--------
+	cd-cli list vms -v
+	NAME                               	VAPP            	STATUS    	DEPLOYED
+	guppy-8fb68                        	guppy           	POWERED_ON	true
+	guppy-w4chm                        	guppy           	POWERED_ON	true
+	guppy-worker-79fbbb5b7c-9mvpm      	guppy           	POWERED_ON	true
+	squid-proxy                        	installation-proxy	POWERED_ON	true
+
+	cd-cli list vms --vapp installation-proxy
+	squid-proxy
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintVMs(verbose, verboseClient, onlyTemplates, vapp)
 		},

@@ -23,13 +23,17 @@ import (
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "This command can clean various resources from vcd: vms, vapps, virtual services, etc.",
+	Long: `This command can clean various resources from vcd: vms, vapps, virtual services, etc.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Examples: 
+	---------
+	cd-cli clean vapp jiri3
+	Are you sure you want to delete vApp 'jiri3'[y/n]?
+	y
+	
+	cd-cli clean vms --assumeyes --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("clean called")
 	},

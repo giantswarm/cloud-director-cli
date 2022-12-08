@@ -26,7 +26,17 @@ var (
 		Use:     "disks",
 		Aliases: []string{"disk"},
 		Short:   "List all the disks",
-		Long:    `List all the disks in the cloud director`,
+		Long: `List all the disks in the cloud director
+
+	Example:
+	--------
+	cd-cli list disks -v
+	NAME                                         	SIZE(Mb)  	STATUS    	VMs	TYPE
+	pvc-69969a35-b9df-4605-b052-d60beabf0d20     	5120      	RESOLVED  	0	Paravirtual (SCSI)
+	pvc-37eef8f3-8708-40fb-b4c3-6d6cc3e0a760     	1024      	RESOLVED  	0	Paravirtual (SCSI)
+	pvc-5add9939-513c-4017-a76b-927221881ac1     	1024      	RESOLVED  	0	Paravirtual (SCSI)
+	...
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintDisks(verbose, verboseClient, unattached)
 		},

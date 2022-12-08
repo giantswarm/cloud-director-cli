@@ -24,7 +24,16 @@ var (
 		Use:     "vapps",
 		Aliases: []string{"vapp"},
 		Short:   "List all the vApps",
-		Long:    `List all the vApps in the cloud director`,
+		Long: `List all the vApps in the cloud director
+
+	Example:
+	--------
+	cd-cli list vapp -v
+	NAME                               	ID
+	guppy                              	urn:vcloud:vapp:afe1a37f-4b7d-4c0f-a5f3-14f19bf5f073
+	installation-proxy                 	urn:vcloud:vapp:8994a22f-4870-43d4-8897-6945f2e96d9b
+	gs-eric-vcd                        	urn:vcloud:vapp:26f79f84-908b-4ee8-88a9-36d5066175f8
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintvApps(verbose, verboseClient, onlyTemplates, vapp)
 		},

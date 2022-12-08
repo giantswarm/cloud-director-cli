@@ -26,7 +26,17 @@ var (
 		Use:     "vms -a vAppName VMname... ",
 		Aliases: []string{"vm"},
 		Short:   "Delete the VMs",
-		Long:    `Delete the VMs in the cloud director of a given vApp`,
+		Long: `Delete the VMs in the cloud director of a given vApp
+
+	Example:
+	--------
+	cd-cli clean vms --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
+	Are you sure you want to delete following VMs: [jiri3-worker-7b4d46494-8rj59, jiri3-worker-7b4d46494-p6vhp] [y/n]?
+	y
+	
+	or for non-interactive mode:
+	cd-cli clean vms -y --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.DeleteVMs(args, vapp, yes, verboseClient)
 		},

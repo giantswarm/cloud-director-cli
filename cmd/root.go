@@ -33,15 +33,16 @@ var (
 		Use:     "cd-cli",
 		Version: getVersion(),
 		Short:   "Simple cli tool that communicates with cloud director",
-		Long: `cd-cli is primarily meant to be used to clean the leftovers from VCD console.
-These may contain VMs, volumes, etc.
-	
-	For example:
+		Long: `cd-cli simple cli tool that communicates with cloud director
 
-		cd-cli clean mycluster`,
-		// Uncomment the following line if your bare application
-		// has an action associated with it:
-		// Run: func(cmd *cobra.Command, args []string) { },
+	Find more information at: https://github.com/giantswarm/cloud-director-cli
+	
+	Examples:
+	---------
+	cd-cli clean vms --assumeyes --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
+	cd-cli clean vapp jiri3
+	cd-cli list disks -v
+`,
 	}
 )
 
@@ -64,7 +65,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Use verbose output")
-	rootCmd.PersistentFlags().BoolVar(&verboseClient, "verboseClient", false, "Use even more verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&verboseClient, "verboseClient", "d", false, "Use even more verbose output")
 
 }
 

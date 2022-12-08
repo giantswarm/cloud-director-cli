@@ -24,7 +24,16 @@ var (
 		Use:     "vapp name",
 		Aliases: []string{"vapps"},
 		Short:   "Delete specified vApp",
-		Long:    `Delete specified vApp and all its VMs`,
+		Long: `Delete specified vApp and all its VMs
+
+	Example:
+	--------
+	cd-cli clean vapp jiri3
+	Are you sure you want to delete vApp 'jiri3'[y/n]?
+	y
+
+Previous command deletes the vApp 'jiri3' itself and all its related VMs if there are any.
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.DeletevApp(args, yes, verboseClient)
 		},
