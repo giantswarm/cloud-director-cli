@@ -11,6 +11,12 @@ brew tap giantswarm/cd-cli
 brew install cd-cli
 ```
 
+Update to the latest version: 
+
+```bash
+brew update && brew upgrade cd-cli
+```
+
 Or alternatively download the latest binary for your platform at https://github.com/giantswarm/cloud-director-cli/releases
 and put it to your `$PATH`.
 

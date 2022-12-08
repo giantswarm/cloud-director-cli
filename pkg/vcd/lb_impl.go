@@ -73,11 +73,11 @@ func PrintLBPools(verbose bool, verboseClient bool) error {
 			fmt.Println(lbpool.NsxtAlbPool.Name)
 		} else {
 			if !headerPrinted {
-				fmt.Printf("%-90s\t%-17s\t%-14s\t\n", "NAME", "ALGOTITHM", "MEMBERS")
+				fmt.Printf("%-90s\t%-17s\t%-9s\t%s\t\n", "NAME", "ALGOTITHM", "MEMBERS", "ENABLED")
 				headerPrinted = true
 			}
 			l := lbpool.NsxtAlbPool
-			fmt.Printf("%-90s\t%-17s\t%v\t\n", l.Name, l.Algorithm, l.MemberCount)
+			fmt.Printf("%-90s\t%-17s\t%-9v\t%t\t\n", l.Name, l.Algorithm, l.MemberCount, *l.Enabled)
 		}
 	}
 	return nil

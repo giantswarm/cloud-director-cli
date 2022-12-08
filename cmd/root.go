@@ -15,23 +15,18 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
-	"strings"
-
-	"runtime/debug"
-
 	"github.com/spf13/cobra"
+	"os"
 )
-
-var version string
 
 // rootCmd represents the base command when called without any subcommands
 var (
+	Version       string
 	verbose       bool
 	verboseClient bool
 	rootCmd       = &cobra.Command{
 		Use:     "cd-cli",
-		Version: getVersion(),
+		Version: "1",
 		Short:   "Simple cli tool that communicates with cloud director",
 		Long: `cd-cli simple cli tool that communicates with cloud director
 
@@ -56,21 +51,5 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Use verbose output")
 	rootCmd.PersistentFlags().BoolVarP(&verboseClient, "verboseClient", "d", false, "Use even more verbose output")
-
-}
-
-func getVersion() string {
-	if version == "" {
-		bi, ok := debug.ReadBuildInfo()
-		if !ok {
-			return ""
-		}
-
-		for _, dep := range bi.Deps {
-			if strings.Contains(dep.Path, "cloud-director-cli") {
-				version = dep.Version
-			}
-		}
-	}
-	return version
+	rootCmd.SetVersionTemplate("asdf")
 }
