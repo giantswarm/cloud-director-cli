@@ -38,8 +38,9 @@ var (
 	...
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintDisks(verbose, verboseClient, unattached)
+			vcd.PrintDisks(output, verboseClient, unattached)
 		},
+		PreRun: ValidateOutput,
 	}
 )
 

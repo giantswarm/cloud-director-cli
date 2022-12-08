@@ -16,6 +16,7 @@ package vcd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -82,10 +83,18 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verboseClient bool) e
 	return nil
 }
 
-func PrintVs(verbose bool, verboseClient bool) error {
+func PrintVs(output string, verboseClient bool) error {
 	var headerPrinted bool
+	if output == "json" {
+		j, err := json.Marshal(ListVs(verboseClient))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(j))
+		return nil
+	}
 	for _, svc := range ListVs(verboseClient) {
-		if !verbose {
+		if output == "names" {
 			fmt.Println(svc.NsxtAlbVirtualService.Name)
 		} else {
 			if !headerPrinted {

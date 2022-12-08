@@ -15,6 +15,7 @@ limitations under the License.
 package vcd
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
@@ -63,10 +64,18 @@ func DeletevApp(names []string, yes bool, verboseClient bool) error {
 	return nil
 }
 
-func PrintvApps(verbose bool, verboseClient bool, onlyTemplates bool, vapp string) error {
+func PrintvApps(output string, verboseClient bool, onlyTemplates bool, vapp string) error {
 	var headerPrinted bool
+	if output == "json" {
+		j, err := json.Marshal(ListvApps(verboseClient))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(j))
+		return nil
+	}
 	for _, vapp := range ListvApps(verboseClient) {
-		if !verbose {
+		if output == "names" {
 			fmt.Println(vapp.Name)
 		} else {
 			if !headerPrinted {

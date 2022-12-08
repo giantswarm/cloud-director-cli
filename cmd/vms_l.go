@@ -41,8 +41,9 @@ var (
 	squid-proxy
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVMs(verbose, verboseClient, onlyTemplates, vapp)
+			vcd.PrintVMs(output, verboseClient, onlyTemplates, vapp)
 		},
+		PreRun: ValidateOutput,
 	}
 )
 

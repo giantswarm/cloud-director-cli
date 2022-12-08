@@ -15,22 +15,39 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // listCmd represents the list command
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
-	Long: `This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.
+var (
+	output  string
+	listCmd = &cobra.Command{
+		Use:   "list",
+		Short: "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
+		Long: `This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.
 
 	Examples: 
 	---------
 	cd-cli list vms -v
 	cd-cli list disks
 `,
-}
+		PreRun: ValidateOutput,
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+	listCmd.PersistentFlags().StringVarP(&output, "output", "o", "names", "Output format. One of: (json, yaml, names, columns)")
+}
+
+func ValidateOutput(cmd *cobra.Command, _ []string) {
+	switch cmd.Flag("output").Value.String() {
+	case "json", "yaml", "names", "columns": //no-op
+	default:
+		fmt.Printf("\nunknown value for --output '%s'\n", cmd.Flag("output").Value.String())
+		fmt.Printf("use one of the following: [json, yaml, names, columns]\n")
+		os.Exit(1)
+	}
 }

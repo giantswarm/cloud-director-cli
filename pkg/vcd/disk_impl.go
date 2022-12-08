@@ -15,6 +15,7 @@ limitations under the License.
 package vcd
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
@@ -68,13 +69,21 @@ func DeleteDisks(names []string, vapp string, yes bool, verboseClient bool) erro
 	return nil
 }
 
-func PrintDisks(verbose bool, verboseClient bool, unattached bool) error {
+func PrintDisks(output string, verboseClient bool, unattached bool) error {
 	var headerPrinted bool
+	if output == "json" {
+		j, err := json.Marshal(ListDisks(verboseClient))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(j))
+		return nil
+	}
 	for _, d := range ListDisks(verboseClient) {
 		if unattached && d.AttachedVmCount > 0 {
 			continue
 		}
-		if !verbose {
+		if output == "names" {
 			fmt.Println(d.Name)
 		} else {
 			if !headerPrinted {

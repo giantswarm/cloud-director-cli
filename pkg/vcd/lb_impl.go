@@ -16,6 +16,7 @@ package vcd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"log"
@@ -66,10 +67,18 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verboseClient boo
 	return nil
 }
 
-func PrintLBPools(verbose bool, verboseClient bool) error {
+func PrintLBPools(output string, verboseClient bool) error {
 	var headerPrinted bool
+	if output == "json" {
+		j, err := json.Marshal(ListLBPools(verboseClient))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(j))
+		return nil
+	}
 	for _, lbpool := range ListLBPools(verboseClient) {
-		if !verbose {
+		if output == "names" {
 			fmt.Println(lbpool.NsxtAlbPool.Name)
 		} else {
 			if !headerPrinted {
