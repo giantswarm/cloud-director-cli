@@ -22,8 +22,9 @@ import (
 
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
-	Use:   "clean",
-	Short: "This command can clean various resources from vcd: vms, vapps, virtual services, etc.",
+	Use:     "clean",
+	Aliases: []string{"delete"},
+	Short:   "This command can clean various resources from vcd: vms, vapps, virtual services, etc.",
 	Long: `This command can clean various resources from vcd: vms, vapps, virtual services, etc.
 
 	Examples: 
@@ -33,6 +34,8 @@ var cleanCmd = &cobra.Command{
 	y
 	
 	cd-cli clean vms --assumeyes --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
+
+	cd-cli clean virtualservice --assumeyes guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("clean called")

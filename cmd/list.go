@@ -15,8 +15,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -31,11 +29,6 @@ var listCmd = &cobra.Command{
 	cd-cli list vms -v
 	cd-cli list disks
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("examples: ")
-		fmt.Println("cd-cli list vms -v")
-		fmt.Println("cd-cli list disks")
-	},
 }
 
 func init() {

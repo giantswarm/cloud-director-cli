@@ -22,7 +22,7 @@ import (
 var (
 	listVappsCmd = &cobra.Command{
 		Use:     "vapps",
-		Aliases: []string{"vapp"},
+		Aliases: []string{"vapp", "virtualapp", "virtualapps"},
 		Short:   "List all the vApps",
 		Long: `List all the vApps in the cloud director
 

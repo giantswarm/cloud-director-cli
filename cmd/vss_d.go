@@ -20,26 +20,25 @@ import (
 )
 
 var (
-	delVappsCmd = &cobra.Command{
-		Use:     "vapp name",
-		Aliases: []string{"vapps", "virtualapp", "virtualapps"},
-		Short:   "Delete specified vApp",
-		Long: `Delete specified vApp and all its VMs
+	failifabsent bool
+	delVssCmd    = &cobra.Command{
+		Use:     "vs VSname... ",
+		Aliases: []string{"vs", "virtualservices", "virtualservice", "virtualsvc", "virtualsvcs", "vsvc", "vsvcs"},
+		Short:   "Delete the virtual service",
+		Long: `Delete the virtual service in the cloud director
 
 	Example:
 	--------
-	cd-cli clean vapp jiri3
-	Are you sure you want to delete vApp 'jiri3'[y/n]?
-	y
-
-Previous command deletes the vApp 'jiri3' itself and all its related VMs if there are any.
+	cd-cli delete vs sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeletevApp(args, yes, verboseClient)
+			vcd.DeleteVs(args, failifabsent, yes, verboseClient)
 		},
 	}
 )
 
 func init() {
-	cleanCmd.AddCommand(delVappsCmd)
+	cleanCmd.AddCommand(delVssCmd)
+	delVssCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the virtual service is not there")
+	delVssCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }
