@@ -16,15 +16,14 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 	"net/url"
 )
 
-func ListDisks(verboseClient bool) []*types.DiskRecordType {
+func ListDisks(verbose bool) []*types.DiskRecordType {
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -38,7 +37,7 @@ func ListDisks(verboseClient bool) []*types.DiskRecordType {
 	return results.Results.DiskRecord
 }
 
-func DeleteDisks(names []string, vapp string, yes bool, verbose bool) {
+func DeleteDisks(names []string, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
@@ -47,12 +46,8 @@ func DeleteDisks(names []string, vapp string, yes bool, verbose bool) {
 	if e != nil {
 		log.Fatal(e)
 	}
-	m, err := vcdsdk.NewVDCManager(c, "", "")
-	if err != nil {
-		log.Fatal(err)
-	}
 	if !yes {
-		fmt.Printf("Are you sure you want to delete following VMs: %v [y/n]?\n", names)
+		fmt.Printf("Are you sure you want to delete following disks: %v [y/n]?\n", names)
 		var char rune
 		_, err := fmt.Scanf("%c", &char)
 		if err != nil {
@@ -62,8 +57,18 @@ func DeleteDisks(names []string, vapp string, yes bool, verbose bool) {
 			return
 		}
 	}
-	for _, vm := range names {
-		m.DeleteVM(vapp, vm)
+	for _, name := range names {
+		disks, err := c.VDC.GetDisksByName(name, false)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, d := range *disks {
+			t, e := d.Delete()
+			if e != nil {
+				log.Fatal(e)
+			}
+			fmt.Printf("delete task was created: %s\n", t.Task.ID)
+		}
 	}
 }
 
