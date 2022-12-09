@@ -47,5 +47,4 @@ func init() {
 	cleanCmd.AddCommand(delVmsCmd)
 	delVmsCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "vApp whose VMs will be deleted")
 	delVmsCmd.MarkFlagRequired("vapp")
-	delVmsCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }

@@ -39,5 +39,4 @@ var (
 func init() {
 	cleanCmd.AddCommand(delLbpsCmd)
 	delLbpsCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the load balancer pool is not there")
-	delLbpsCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }

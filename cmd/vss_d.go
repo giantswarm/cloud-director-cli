@@ -22,7 +22,7 @@ import (
 var (
 	failifabsent bool
 	delVssCmd    = &cobra.Command{
-		Use:     "vs VSname... ",
+		Use:     "vss VSname... ",
 		Aliases: []string{"vs", "virtualservices", "virtualservice", "virtualsvc", "virtualsvcs", "vsvc", "vsvcs"},
 		Short:   "Delete the virtual service",
 		Long: `Delete the virtual service in the cloud director
@@ -40,5 +40,4 @@ var (
 func init() {
 	cleanCmd.AddCommand(delVssCmd)
 	delVssCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the virtual service is not there")
-	delVssCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }

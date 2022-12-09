@@ -15,8 +15,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -37,11 +35,9 @@ var cleanCmd = &cobra.Command{
 
 	cd-cli clean virtualservice --assumeyes guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("clean called")
-	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
+	cleanCmd.PersistentFlags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }

@@ -24,8 +24,9 @@ import (
 var (
 	output  string
 	listCmd = &cobra.Command{
-		Use:   "list",
-		Short: "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
+		Use:     "list",
+		Aliases: []string{"get"},
+		Short:   "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
 		Long: `This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.
 
 	Examples: 
