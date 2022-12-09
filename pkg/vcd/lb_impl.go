@@ -16,7 +16,6 @@ package vcd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"log"
@@ -37,12 +36,12 @@ func ListLBPools(verboseClient bool) []*govcd.NsxtAlbPool {
 	return lbPoos
 }
 
-func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verboseClient bool) error {
+func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a LB Pool")
 	}
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -55,7 +54,7 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verboseClient boo
 			log.Fatal(err)
 		}
 		if char != 'y' && char != 'Y' {
-			return nil
+			return
 		}
 	}
 	for _, vs := range names {
@@ -64,30 +63,28 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verboseClient boo
 			log.Fatal(err)
 		}
 	}
-	return nil
 }
 
-func PrintLBPools(output string, verboseClient bool) error {
-	var headerPrinted bool
-	if output == "json" {
-		j, err := json.Marshal(ListLBPools(verboseClient))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(string(j))
-		return nil
-	}
-	for _, lbpool := range ListLBPools(verboseClient) {
-		if output == "names" {
-			fmt.Println(lbpool.NsxtAlbPool.Name)
-		} else {
-			if !headerPrinted {
-				fmt.Printf("%-90s\t%-17s\t%-9s\t%s\t\n", "NAME", "ALGOTITHM", "MEMBERS", "ENABLED")
-				headerPrinted = true
+func PrintLBPools(output string, verbose bool) {
+	items := ListLBPools(verbose)
+	switch output {
+	case "json":
+		PrintJson(items)
+	case "yaml":
+		PrintYaml(items)
+	default:
+		var headerPrinted bool
+		for _, lbpool := range items {
+			if output == "names" {
+				fmt.Println(lbpool.NsxtAlbPool.Name)
+			} else {
+				if !headerPrinted {
+					fmt.Printf("%-90s\t%-17s\t%-9s\t%s\t\n", "NAME", "ALGOTITHM", "MEMBERS", "ENABLED")
+					headerPrinted = true
+				}
+				l := lbpool.NsxtAlbPool
+				fmt.Printf("%-90s\t%-17s\t%-9v\t%t\t\n", l.Name, l.Algorithm, l.MemberCount, *l.Enabled)
 			}
-			l := lbpool.NsxtAlbPool
-			fmt.Printf("%-90s\t%-17s\t%-9v\t%t\t\n", l.Name, l.Algorithm, l.MemberCount, *l.Enabled)
 		}
 	}
-	return nil
 }

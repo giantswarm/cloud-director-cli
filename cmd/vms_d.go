@@ -38,7 +38,7 @@ var (
 	cd-cli clean vms -y --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVMs(args, vapp, yes, verboseClient)
+			vcd.DeleteVMs(args, vapp, yes, verbose)
 		},
 	}
 )

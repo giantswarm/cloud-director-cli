@@ -15,16 +15,15 @@ limitations under the License.
 package vcd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 )
 
-func ListvApps(verboseClient bool) []*types.ResourceReference {
+func ListvApps(verbose bool) []*types.ResourceReference {
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -32,13 +31,13 @@ func ListvApps(verboseClient bool) []*types.ResourceReference {
 	return vapps
 }
 
-func DeletevApp(names []string, yes bool, verboseClient bool) error {
+func DeletevApp(names []string, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide a name of the vApp")
 	}
 	name := names[0]
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -54,36 +53,34 @@ func DeletevApp(names []string, yes bool, verboseClient bool) error {
 			log.Fatal(err)
 		}
 		if char != 'y' && char != 'Y' {
-			return nil
+			return
 		}
 	}
 	err2 := m.DeleteVApp(name)
 	if err2 != nil {
 		log.Fatal(err2)
 	}
-	return nil
 }
 
-func PrintvApps(output string, verboseClient bool, onlyTemplates bool, vapp string) error {
-	var headerPrinted bool
-	if output == "json" {
-		j, err := json.Marshal(ListvApps(verboseClient))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(string(j))
-		return nil
-	}
-	for _, vapp := range ListvApps(verboseClient) {
-		if output == "names" {
-			fmt.Println(vapp.Name)
-		} else {
-			if !headerPrinted {
-				fmt.Printf("%-35s\t%-16s\t\n", "NAME", "ID")
-				headerPrinted = true
+func PrintvApps(output string, verbose bool) {
+	items := ListvApps(verbose)
+	switch output {
+	case "json":
+		PrintJson(items)
+	case "yaml":
+		PrintYaml(items)
+	default:
+		var headerPrinted bool
+		for _, vapp := range items {
+			if output == "names" {
+				fmt.Println(vapp.Name)
+			} else {
+				if !headerPrinted {
+					fmt.Printf("%-35s\t%-16s\t\n", "NAME", "ID")
+					headerPrinted = true
+				}
+				fmt.Printf("%-35s\t%-16s\t\n", vapp.Name, vapp.ID)
 			}
-			fmt.Printf("%-35s\t%-16s\t\n", vapp.Name, vapp.ID)
 		}
 	}
-	return nil
 }

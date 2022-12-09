@@ -32,7 +32,7 @@ var (
 	cd-cli delete vs sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVs(args, failifabsent, yes, verboseClient)
+			vcd.DeleteVs(args, failifabsent, yes, verbose)
 		},
 	}
 )

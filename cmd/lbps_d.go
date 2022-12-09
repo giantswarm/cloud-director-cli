@@ -31,7 +31,7 @@ var (
 	cd-cli delete lbp sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteLBPool(args, failifabsent, yes, verboseClient)
+			vcd.DeleteLBPool(args, failifabsent, yes, verbose)
 		},
 	}
 )

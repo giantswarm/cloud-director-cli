@@ -35,7 +35,7 @@ var (
 Previous command deletes the vApp 'jiri3' itself and all its related VMs if there are any.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeletevApp(args, yes, verboseClient)
+			vcd.DeletevApp(args, yes, verbose)
 		},
 	}
 )

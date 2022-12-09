@@ -16,16 +16,15 @@ package vcd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"log"
 )
 
-func ListVs(verboseClient bool) []*govcd.NsxtAlbVirtualService {
+func ListVs(items bool) []*govcd.NsxtAlbVirtualService {
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(items)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -53,12 +52,12 @@ func getGatewayManager(c *vcdsdk.Client) *vcdsdk.GatewayManager {
 	return gateway
 }
 
-func DeleteVs(names []string, failIfAbsent bool, yes bool, verboseClient bool) error {
+func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) error {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Virtual Service")
 	}
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -83,27 +82,26 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verboseClient bool) e
 	return nil
 }
 
-func PrintVs(output string, verboseClient bool) error {
-	var headerPrinted bool
-	if output == "json" {
-		j, err := json.Marshal(ListVs(verboseClient))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(string(j))
-		return nil
-	}
-	for _, svc := range ListVs(verboseClient) {
-		if output == "names" {
-			fmt.Println(svc.NsxtAlbVirtualService.Name)
-		} else {
-			if !headerPrinted {
-				fmt.Printf("%-90s\t%-17s\t%-14s\t\n", "NAME", "IP", "HEALTH")
-				headerPrinted = true
+func PrintVs(output string, verbose bool) {
+	items := ListVs(verbose)
+	switch output {
+	case "json":
+		PrintJson(items)
+	case "yaml":
+		PrintYaml(items)
+	default:
+		var headerPrinted bool
+		for _, svc := range items {
+			if output == "names" {
+				fmt.Println(svc.NsxtAlbVirtualService.Name)
+			} else {
+				if !headerPrinted {
+					fmt.Printf("%-90s\t%-17s\t%-14s\t\n", "NAME", "IP", "HEALTH")
+					headerPrinted = true
+				}
+				s := svc.NsxtAlbVirtualService
+				fmt.Printf("%-90s\t%-17s\t%v\t\n", s.Name, s.VirtualIpAddress, s.HealthStatus)
 			}
-			s := svc.NsxtAlbVirtualService
-			fmt.Printf("%-90s\t%-17s\t%v\t\n", s.Name, s.VirtualIpAddress, s.HealthStatus)
 		}
 	}
-	return nil
 }

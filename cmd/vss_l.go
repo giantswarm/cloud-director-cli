@@ -37,7 +37,7 @@ var (
 	ingress-vs-nginx-ingress-controller-app--http                                             	192.168.8.4      	UP
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVs(output, verboseClient)
+			vcd.PrintVs(output, verbose)
 		},
 		PreRun: ValidateOutput,
 	}

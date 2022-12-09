@@ -15,7 +15,6 @@ limitations under the License.
 package vcd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
@@ -39,12 +38,12 @@ func ListDisks(verboseClient bool) []*types.DiskRecordType {
 	return results.Results.DiskRecord
 }
 
-func DeleteDisks(names []string, vapp string, yes bool, verboseClient bool) error {
+func DeleteDisks(names []string, vapp string, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
 	cache := Cache{}
-	c, e := cache.CachedClient(verboseClient)
+	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -60,38 +59,36 @@ func DeleteDisks(names []string, vapp string, yes bool, verboseClient bool) erro
 			log.Fatal(err)
 		}
 		if char != 'y' && char != 'Y' {
-			return nil
+			return
 		}
 	}
 	for _, vm := range names {
 		m.DeleteVM(vapp, vm)
 	}
-	return nil
 }
 
-func PrintDisks(output string, verboseClient bool, unattached bool) error {
-	var headerPrinted bool
-	if output == "json" {
-		j, err := json.Marshal(ListDisks(verboseClient))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(string(j))
-		return nil
-	}
-	for _, d := range ListDisks(verboseClient) {
-		if unattached && d.AttachedVmCount > 0 {
-			continue
-		}
-		if output == "names" {
-			fmt.Println(d.Name)
-		} else {
-			if !headerPrinted {
-				fmt.Printf("%-45s\t%-10s\t%-10s\t%s\t%-10s\t\n", "NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE")
-				headerPrinted = true
+func PrintDisks(output string, verbose bool, unattached bool) {
+	items := ListDisks(verbose)
+	switch output {
+	case "json":
+		PrintJson(items)
+	case "yaml":
+		PrintYaml(items)
+	default:
+		var headerPrinted bool
+		for _, d := range items {
+			if unattached && d.AttachedVmCount > 0 {
+				continue
 			}
-			fmt.Printf("%-45s\t%-10d\t%-10s\t%d\t%-10s\t\n", d.Name, d.SizeMb, d.Status, d.AttachedVmCount, d.BusTypeDesc)
+			if output == "names" {
+				fmt.Println(d.Name)
+			} else {
+				if !headerPrinted {
+					fmt.Printf("%-45s\t%-10s\t%-10s\t%s\t%-10s\t\n", "NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE")
+					headerPrinted = true
+				}
+				fmt.Printf("%-45s\t%-10d\t%-10s\t%d\t%-10s\t\n", d.Name, d.SizeMb, d.Status, d.AttachedVmCount, d.BusTypeDesc)
+			}
 		}
 	}
-	return nil
 }
