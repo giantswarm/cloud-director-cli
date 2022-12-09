@@ -42,5 +42,4 @@ Previous command deletes the vApp 'jiri3' itself and all its related VMs if ther
 
 func init() {
 	cleanCmd.AddCommand(delVappsCmd)
-	delLbpsCmd.Flags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
 }
