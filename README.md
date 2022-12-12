@@ -43,8 +43,9 @@ kubectl get secret refresh-token-secret -n org-multi-project -o jsonpath='{.data
 - [Disks](#disks)
 - [Virtual Services](#virtual-services)
 - [LB Pools](#lb-pools)
+- [Application Port Profiles](#application-port-profiles)
 
-In general it is `cd-cli ${verb} ${resource} ${params}`.
+In general, it is `cd-cli ${verb} ${resource} ${params}`.
 
 - `${verb}` can be `list|get` or `clean|delete`
 - `${resource}` can be:
@@ -53,6 +54,10 @@ In general it is `cd-cli ${verb} ${resource} ${params}`.
     - `disk(s)`
     - `vs(s)|virtualservice(s)|virtualsvc(s)|vsvc(s)`
     - `lbp(s)|lbpool(s)`
+
+### Custom Output
+
+You may want to use `--output={names,columns,json,yaml}` or short version `-ojson`.
 
 ### VMs
 
@@ -69,10 +74,10 @@ guppy-worker-79fbbb5b7c-sxzkq
 squid-proxy
 ```
 
-Verbose version:
+listing:
 
 ```bash
-cd-cli list vms -v
+cd-cli list vms -ocolumns
 NAME                               	VAPP            	STATUS    	DEPLOYED
 guppy-8fb68                        	guppy           	POWERED_ON	true
 guppy-w4chm                        	guppy           	POWERED_ON	true
@@ -100,9 +105,10 @@ y
 
 ### vApps
 
-List vApps:
+listing:
+
 ```bash
-cd-cli list vapp -v
+cd-cli list vapp -ocolumns
 NAME                               	ID
 guppy                              	urn:vcloud:vapp:afe1a37f-4b7d-4c0f-a5f3-14f19bf5f073
 installation-proxy                 	urn:vcloud:vapp:8994a22f-4870-43d4-8897-6945f2e96d9b
@@ -117,9 +123,10 @@ cd-cli clean vapp jiri3 --asumeyes
 
 ### Disks
 
-List disks:
+listing:
+
 ```bash
-cd-cli list disks -v
+cd-cli list disks -ocolumns
 NAME                                         	SIZE(Mb)  	STATUS    	VMs	TYPE
 pvc-69969a35-b9df-4605-b052-d60beabf0d20     	5120      	RESOLVED  	0	Paravirtual (SCSI)
 pvc-37eef8f3-8708-40fb-b4c3-6d6cc3e0a760     	1024      	RESOLVED  	0	Paravirtual (SCSI)
@@ -140,10 +147,10 @@ cd-cli delete disks sdf1 sdf2 -y
 
 ### Virtual Services
 
-Verbose listing:
+listing:
 
 ```bash
-cd-cli list vs -v
+cd-cli list vs -ocolumns
 NAME                                                                                      	IP               	HEALTH
 gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                               	178.170.32.55    	UP
 ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http  	192.168.8.6      	UP
@@ -169,10 +176,10 @@ cd-cli delete vs guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp  --assume
 
 ### LB Pools
 
-Verbose listing:
+listing:
 
 ```bash
-cd-cli list lbps -v
+cd-cli list lbps -ocolumns
 NAME                                                                                      	ALGOTITHM        	MEMBERS
 ingress-pool-nginx-ingress-controller-app--http                                           	LEAST_CONNECTIONS	6
 ingress-pool-nginx-ingress-controller-app--https                                          	LEAST_CONNECTIONS	6
@@ -184,4 +191,26 @@ deleting:
 
 ```bash
 cd-cli delete lbp sdf1 sdf2 sdf3 -y
+```
+
+### Application Port Profiles
+
+listing:
+
+```bash
+cd-cli get aports -ocolumns
+NAME                                                                                                          	PROTOCOL	PORTS
+appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http         	TCP     	80
+appPort_dnat-ingress-vs-nginx-ingress-controller-app--http                                                    	TCP     	80
+appPort_dnat-ingress-vs-nginx-NO_RDE_1c2691d0-4fcb-494d-99da-97e7122c78fb-                                    	TCP     	80
+appPort_dnat-ingress-vs-nginx-NO_RDE_6a38fa74-b052-481a-82ea-efc803970e2c-                                    	TCP     	80
+appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http         	TCP     	80
+appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_40a12562-719b-44a4-b70e-2a026adaef1d-https        	TCP     	443
+```
+
+deleting:
+
+```bash
+cd-cli delete aports -y appPort_dnat-ingress-vs-nginx-NO_RDE_1c2691d0-4fcb-494d-99da-97e7122c78fb- \
+                        appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http
 ```

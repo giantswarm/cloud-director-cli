@@ -15,47 +15,34 @@ limitations under the License.
 package vcd
 
 import (
-	"context"
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 )
 
-func ListVs(items bool) []*govcd.NsxtAlbVirtualService {
+func ListAports(items bool) []*govcd.NsxtAppPortProfile {
 	cache := Cache{}
 	c, e := cache.CachedClient(items)
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
-	vSvcs, err := c.VCDClient.GetAllAlbVirtualServices(gateway.GatewayRef.Id, nil)
+	//gateway := getGatewayManager(c)
+	//gateway.DeleteAppPortProfile()
+	org, err := c.VCDClient.GetOrgByName(c.ClusterOrgName)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return vSvcs
+	aports, err := org.GetAllNsxtAppPortProfiles(nil, types.ApplicationPortProfileScopeTenant)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return aports
 }
 
-func getGatewayManager(c *vcdsdk.Client) *vcdsdk.GatewayManager {
-	nw, err := c.VDC.GetNetworkList()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if nw == nil || len(nw) == 0 {
-		log.Fatal(fmt.Errorf("no networks detected"))
-	}
-	// todo: nw name
-	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, nw[0].Name, "")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return gateway
-}
-
-func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
+func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a Virtual Service")
+		log.Fatal("Provide at least 1 name of a Application Port Profile")
 	}
 	cache := Cache{}
 	c, e := cache.CachedClient(verbose)
@@ -64,7 +51,7 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	}
 	gateway := getGatewayManager(c)
 	if !yes {
-		fmt.Printf("Are you sure you want to delete following Virtual Services: %v [y/n]?\n", names)
+		fmt.Printf("Are you sure you want to delete following Application Port Profiles: %v [y/n]?\n", names)
 		var char rune
 		_, err := fmt.Scanf("%c", &char)
 		if err != nil {
@@ -74,16 +61,16 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
 			return
 		}
 	}
-	for _, vs := range names {
-		err := gateway.DeleteVirtualService(context.Background(), vs, failIfAbsent)
+	for _, a := range names {
+		err := gateway.DeleteAppPortProfile(a, failIfAbsent)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 }
 
-func PrintVs(output string, verbose bool) {
-	items := ListVs(verbose)
+func PrintAports(output string, verbose bool) {
+	items := ListAports(verbose)
 	switch output {
 	case "json":
 		PrintJson(items)
@@ -91,16 +78,24 @@ func PrintVs(output string, verbose bool) {
 		PrintYaml(items)
 	default:
 		var headerPrinted bool
-		for _, svc := range items {
+		for _, aport := range items {
 			if output == "names" {
-				fmt.Println(svc.NsxtAlbVirtualService.Name)
+				fmt.Println(aport.NsxtAppPortProfile.Name)
 			} else {
 				if !headerPrinted {
-					fmt.Printf("%-90s\t%-17s\t%-14s\t\n", "NAME", "IP", "HEALTH")
+					fmt.Printf("%-110s\t%-8s\t%-14s\t\n", "NAME", "PROTOCOL", "PORTS")
 					headerPrinted = true
 				}
-				s := svc.NsxtAlbVirtualService
-				fmt.Printf("%-90s\t%-17s\t%v\t\n", s.Name, s.VirtualIpAddress, s.HealthStatus)
+				a := aport.NsxtAppPortProfile
+				protocol := "unknown"
+				port := "unknown"
+				if len(a.ApplicationPorts) > 0 {
+					protocol = a.ApplicationPorts[0].Protocol
+					if len(a.ApplicationPorts[0].DestinationPorts) > 0 {
+						port = a.ApplicationPorts[0].DestinationPorts[0]
+					}
+				}
+				fmt.Printf("%-110s\t%-8s\t%s\t\n", a.Name, protocol, port)
 			}
 		}
 	}

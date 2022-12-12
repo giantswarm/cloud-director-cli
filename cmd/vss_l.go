@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listVssCmd represents the vms command
 var (
 	listVssCmd = &cobra.Command{
 		Use:     "vss",
@@ -29,7 +28,7 @@ var (
 
 	Examples:
 	--------
-	cd-cli list vs -v
+	cd-cli list vs -o=columns
 	NAME                                                                                      	IP               	HEALTH
 	gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                               	178.170.32.55    	UP
 	ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http  	192.168.8.6      	UP

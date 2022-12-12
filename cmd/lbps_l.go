@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listLbpsCmd represents the vms command
 var (
 	listLbpsCmd = &cobra.Command{
 		Use:     "lbps",
@@ -29,7 +28,7 @@ var (
 
 	Examples:
 	--------
-	cd-cli list lbps -v
+	cd-cli list lbps -o=columns
 	NAME                                                                                      	ALGOTITHM        	MEMBERS
 	ingress-pool-nginx-ingress-controller-app--http                                           	LEAST_CONNECTIONS	6
 	ingress-pool-nginx-ingress-controller-app--https                                          	LEAST_CONNECTIONS	6

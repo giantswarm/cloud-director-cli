@@ -20,27 +20,23 @@ import (
 )
 
 var (
-	listVappsCmd = &cobra.Command{
-		Use:     "vapps",
-		Aliases: []string{"vapp", "virtualapp", "virtualapps"},
-		Short:   "List all the vApps",
-		Long: `List all the vApps in the cloud director
+	delAportsCmd = &cobra.Command{
+		Use:     "aport name... ",
+		Aliases: []string{"aports", "appport", "appports"},
+		Short:   "Delete the application port profiles",
+		Long: `Delete the application port profiles in the cloud director
 
 	Example:
 	--------
-	cd-cli list vapp -o=columns
-	NAME                               	ID
-	guppy                              	urn:vcloud:vapp:afe1a37f-4b7d-4c0f-a5f3-14f19bf5f073
-	installation-proxy                 	urn:vcloud:vapp:8994a22f-4870-43d4-8897-6945f2e96d9b
-	gs-eric-vcd                        	urn:vcloud:vapp:26f79f84-908b-4ee8-88a9-36d5066175f8
+	cd-cli delete aport sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintvApps(output, verbose)
+			vcd.DeleteAport(args, failifabsent, yes, verbose)
 		},
-		PreRun: ValidateOutput,
 	}
 )
 
 func init() {
-	listCmd.AddCommand(listVappsCmd)
+	cleanCmd.AddCommand(delAportsCmd)
+	delAportsCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the application port profile is not there")
 }

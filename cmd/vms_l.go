@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listVmsCmd represents the vms command
 var (
 	vapp       string
 	listVmsCmd = &cobra.Command{
@@ -30,7 +29,7 @@ var (
 
 	Examples:
 	--------
-	cd-cli list vms -v
+	cd-cli list vms -o=columns
 	NAME                               	VAPP            	STATUS    	DEPLOYED
 	guppy-8fb68                        	guppy           	POWERED_ON	true
 	guppy-w4chm                        	guppy           	POWERED_ON	true

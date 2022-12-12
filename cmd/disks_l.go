@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listVmsCmd represents the vms command
 var (
 	unattached   bool
 	listDisksCmd = &cobra.Command{
@@ -30,7 +29,7 @@ var (
 
 	Example:
 	--------
-	cd-cli list disks -v
+	cd-cli list disks -o=columns
 	NAME                                         	SIZE(Mb)  	STATUS    	VMs	TYPE
 	pvc-69969a35-b9df-4605-b052-d60beabf0d20     	5120      	RESOLVED  	0	Paravirtual (SCSI)
 	pvc-37eef8f3-8708-40fb-b4c3-6d6cc3e0a760     	1024      	RESOLVED  	0	Paravirtual (SCSI)
