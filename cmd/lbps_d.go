@@ -20,6 +20,7 @@ import (
 )
 
 var (
+	cascade    bool
 	delLbpsCmd = &cobra.Command{
 		Use:     "lbps LBPoolName...",
 		Aliases: []string{"lbp", "lbpool", "lbpools"},
@@ -28,15 +29,16 @@ var (
 
 	Example:
 	--------
-	cd-cli delete lbp sdf -y --failifabsent
+	cd-cli delete lbp sdf -y --failifabsent --cascade
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteLBPool(args, failifabsent, yes, verbose)
+			vcd.DeleteLBPool(args, failifabsent, yes, verbose, cascade)
 		},
 	}
 )
 
 func init() {
 	cleanCmd.AddCommand(delLbpsCmd)
+	delLbpsCmd.Flags().BoolVar(&cascade, "cascade", false, "delete also the associated virual services, this assumes them to have the same name as the LB pools")
 	delLbpsCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the load balancer pool is not there")
 }

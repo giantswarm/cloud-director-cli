@@ -45,6 +45,7 @@ func getGatewayManager(c *vcdsdk.Client) *vcdsdk.GatewayManager {
 	if nw == nil || len(nw) == 0 {
 		log.Fatal(fmt.Errorf("no networks detected"))
 	}
+	// todo: nw name
 	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, nw[0].Name, "")
 	if err != nil {
 		log.Fatal(err)

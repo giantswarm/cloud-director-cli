@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"log"
+	"os"
+	"strings"
 )
 
 func ListLBPools(verboseClient bool) []*govcd.NsxtAlbPool {
@@ -36,7 +38,7 @@ func ListLBPools(verboseClient bool) []*govcd.NsxtAlbPool {
 	return lbPoos
 }
 
-func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool) {
+func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cascade bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a LB Pool")
 	}
@@ -57,10 +59,21 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool) {
 			return
 		}
 	}
-	for _, vs := range names {
-		err := gateway.DeleteLoadBalancerPool(context.Background(), vs, failIfAbsent)
+	for _, lb := range names {
+		err := gateway.DeleteLoadBalancerPool(context.Background(), lb, failIfAbsent)
 		if err != nil {
-			log.Fatal(err)
+			if strings.Contains(err.Error(), "obtained [400]") {
+				if !cascade {
+					fmt.Fprintf(os.Stderr, "First delete the associated virtual service\n")
+					log.Fatal(err)
+				}
+				// try to delete the associated virtual services first and then re-try
+				fmt.Printf("Trying to delete the Virtual Services %v first\n", names)
+				DeleteVs(names, failIfAbsent, yes, verbose)
+				DeleteLBPool(names, failIfAbsent, yes, verbose, false)
+			} else {
+				log.Fatal(err)
+			}
 		}
 	}
 }

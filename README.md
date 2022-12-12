@@ -38,9 +38,21 @@ kubectl get secret refresh-token-secret -n org-multi-project -o jsonpath='{.data
 
 ## Examples
 
+- [VMs](#vms)
+- [vApps](#vapps)
+- [Disks](#disks)
+- [Virtual Services](#virtual-services)
+- [LB Pools](#lb-pools)
+
 In general it is `cd-cli ${verb} ${resource} ${params}`.
-where `${verb}` can be `list` or `clean|delete`
-`${resource}` can be `vm(s), vapp(s)|virtualapp(s), disk(s), vs(s)|virtualservice(s)|virtualsvc(s)|vsvc(s)|vsvcs`
+
+- `${verb}` can be `list|get` or `clean|delete`
+- `${resource}` can be:
+    - `vm(s)`
+    - `vapp(s)|virtualapp(s)`
+    - `disk(s)`
+    - `vs(s)|virtualservice(s)|virtualsvc(s)|vsvc(s)`
+    - `lbp(s)|lbpool(s)`
 
 ### VMs
 
