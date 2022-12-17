@@ -7,3 +7,6 @@ cd-cli*
 
 # cosign
 /cosign.key
+
+#ide
+.idea
