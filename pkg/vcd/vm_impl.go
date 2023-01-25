@@ -86,10 +86,10 @@ func PrintVMs(output string, verbose bool, onlyTemplates bool, vapp string) {
 				fmt.Println(vm.Name)
 			} else {
 				if !headerPrinted {
-					fmt.Printf("%-35s\t%-16s\t%-10s\t%s\t\n", "NAME", "VAPP", "STATUS", "DEPLOYED")
+					fmt.Printf("%-35s\t%-16s\t%-10s\t%-8s\t%-16s\t\n", "NAME", "VAPP", "STATUS", "DEPLOYED", "IP")
 					headerPrinted = true
 				}
-				fmt.Printf("%-35s\t%-16s\t%-10s\t%t\t\n", vm.Name, vm.ContainerName, vm.Status, vm.Deployed)
+				fmt.Printf("%-35s\t%-16s\t%-10s\t%-8t\t%-16s\t\n", vm.Name, vm.ContainerName, vm.Status, vm.Deployed, vm.IpAddress)
 			}
 		}
 	}
