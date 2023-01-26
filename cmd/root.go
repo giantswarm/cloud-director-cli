@@ -15,18 +15,17 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	Version string
 	verbose bool
 	rootCmd = &cobra.Command{
-		Use:     "cd-cli",
-		Version: "1",
-		Short:   "Simple cli tool that communicates with cloud director",
+		Use:   "cd-cli",
+		Short: "Simple cli tool that communicates with cloud director",
 		Long: `cd-cli simple cli tool that communicates with cloud director
 
 	Find more information at: https://github.com/giantswarm/cloud-director-cli

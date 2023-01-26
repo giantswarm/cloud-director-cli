@@ -22,10 +22,13 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/peterhellberg/link v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	go.hein.dev/go-version v0.1.0 // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/klog/v2 v2.9.0 // indirect
+	sigs.k8s.io/yaml v1.2.0 // indirect
 )

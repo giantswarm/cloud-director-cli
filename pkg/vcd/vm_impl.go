@@ -16,9 +16,10 @@ package vcd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
-	"log"
 )
 
 func ListVMs(verbose bool, onlyTemplates bool) []*types.QueryResultVMRecordType {
