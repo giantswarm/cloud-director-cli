@@ -16,12 +16,13 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"gopkg.in/yaml.v3"
 	"log"
 	"net/url"
 	"os"
 	"sync"
+
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	"gopkg.in/yaml.v3"
 )
 
 const (

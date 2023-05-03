@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -32,7 +33,7 @@ var (
 	cd-cli delete lbp sdf -y --failifabsent --cascade
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteLBPool(args, failifabsent, yes, verbose, cascade)
+			vcd.DeleteLBPool(args, failifabsent, yes, verbose, cascade, network)
 		},
 	}
 )
@@ -41,4 +42,5 @@ func init() {
 	cleanCmd.AddCommand(delLbpsCmd)
 	delLbpsCmd.Flags().BoolVar(&cascade, "cascade", false, "delete also the associated virual services, this assumes them to have the same name as the LB pools")
 	delLbpsCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the load balancer pool is not there")
+	addNetworkFlag(delLbpsCmd)
 }

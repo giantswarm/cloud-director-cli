@@ -17,19 +17,20 @@ package vcd
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/vmware/go-vcloud-director/v2/govcd"
 )
 
-func ListLBPools(verboseClient bool) []*govcd.NsxtAlbPool {
+func ListLBPools(verboseClient bool, network string) []*govcd.NsxtAlbPool {
 	cache := Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
+	gateway := getGatewayManager(c, network)
 	lbPoos, err := c.VCDClient.GetAllAlbPools(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -38,7 +39,7 @@ func ListLBPools(verboseClient bool) []*govcd.NsxtAlbPool {
 	return lbPoos
 }
 
-func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cascade bool) {
+func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cascade bool, network string) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a LB Pool")
 	}
@@ -47,7 +48,7 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cas
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
+	gateway := getGatewayManager(c, network)
 	if !yes {
 		fmt.Printf("Are you sure you want to delete following LB Pools: %v [y/n]?\n", names)
 		var char rune
@@ -69,8 +70,8 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cas
 				}
 				// try to delete the associated virtual services first and then re-try
 				fmt.Printf("Trying to delete the Virtual Services %v first\n", names)
-				DeleteVs(names, failIfAbsent, yes, verbose)
-				DeleteLBPool(names, failIfAbsent, yes, verbose, false)
+				DeleteVs(names, failIfAbsent, yes, verbose, network)
+				DeleteLBPool(names, failIfAbsent, yes, verbose, false, network)
 			} else {
 				log.Fatal(err)
 			}
@@ -78,8 +79,8 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cas
 	}
 }
 
-func PrintLBPools(output string, verbose bool) {
-	items := ListLBPools(verbose)
+func PrintLBPools(output string, verbose bool, network string) {
+	items := ListLBPools(verbose, network)
 	switch output {
 	case "json":
 		PrintJson(items)

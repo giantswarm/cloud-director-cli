@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -36,7 +37,7 @@ var (
 	ingress-vs-nginx-ingress-controller-app--http                                             	192.168.8.4      	UP
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVs(output, verbose)
+			vcd.PrintVs(output, verbose, network)
 		},
 		PreRun: ValidateOutput,
 	}
@@ -44,4 +45,5 @@ var (
 
 func init() {
 	listCmd.AddCommand(listVssCmd)
+	addNetworkFlag(listVssCmd)
 }

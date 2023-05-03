@@ -16,13 +16,15 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
 var (
 	output  string
+	network string
 	listCmd = &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"get"},
@@ -51,4 +53,8 @@ func ValidateOutput(cmd *cobra.Command, _ []string) {
 		fmt.Printf("use one of the following: [json, yaml, names, columns]\n")
 		os.Exit(1)
 	}
+}
+
+func addNetworkFlag(c *cobra.Command) {
+	c.PersistentFlags().StringVarP(&network, "network", "n", "", "Name of ovdcNetwork network")
 }

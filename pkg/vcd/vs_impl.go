@@ -17,18 +17,19 @@ package vcd
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
-	"log"
 )
 
-func ListVs(items bool) []*govcd.NsxtAlbVirtualService {
+func ListVs(items bool, network string) []*govcd.NsxtAlbVirtualService {
 	cache := Cache{}
 	c, e := cache.CachedClient(items)
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
+	gateway := getGatewayManager(c, network)
 	vSvcs, err := c.VCDClient.GetAllAlbVirtualServices(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -37,23 +38,26 @@ func ListVs(items bool) []*govcd.NsxtAlbVirtualService {
 	return vSvcs
 }
 
-func getGatewayManager(c *vcdsdk.Client) *vcdsdk.GatewayManager {
-	nw, err := c.VDC.GetNetworkList()
-	if err != nil {
-		log.Fatal(err)
+func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager {
+	if network == "" {
+		nw, err := c.VDC.GetNetworkList()
+		if err != nil {
+			log.Fatal(err)
+		}
+		if nw == nil || len(nw) == 0 {
+			log.Fatal(fmt.Errorf("no networks detected"))
+		}
+		network = nw[0].Name
 	}
-	if nw == nil || len(nw) == 0 {
-		log.Fatal(fmt.Errorf("no networks detected"))
-	}
-	// todo: nw name
-	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, nw[0].Name, "")
+
+	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, network, "")
 	if err != nil {
 		log.Fatal(err)
 	}
 	return gateway
 }
 
-func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
+func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool, network string) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Virtual Service")
 	}
@@ -62,7 +66,7 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
+	gateway := getGatewayManager(c, network)
 	if !yes {
 		fmt.Printf("Are you sure you want to delete following Virtual Services: %v [y/n]?\n", names)
 		var char rune
@@ -82,8 +86,8 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	}
 }
 
-func PrintVs(output string, verbose bool) {
-	items := ListVs(verbose)
+func PrintVs(output string, verbose bool, network string) {
+	items := ListVs(verbose, network)
 	switch output {
 	case "json":
 		PrintJson(items)

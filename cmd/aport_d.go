@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -31,7 +32,7 @@ var (
 	cd-cli delete aport sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteAport(args, failifabsent, yes, verbose)
+			vcd.DeleteAport(args, failifabsent, yes, verbose, network)
 		},
 	}
 )
@@ -39,4 +40,5 @@ var (
 func init() {
 	cleanCmd.AddCommand(delAportsCmd)
 	delAportsCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the application port profile is not there")
+	addNetworkFlag(delAportsCmd)
 }
