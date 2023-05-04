@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -40,7 +41,7 @@ var (
 	guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                     	ROUND_ROBIN      	3
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintLBPools(output, verbose)
+			vcd.PrintLBPools(output, verbose, network)
 		},
 		PreRun: ValidateOutput,
 	}
@@ -48,4 +49,5 @@ var (
 
 func init() {
 	listCmd.AddCommand(listLbpsCmd)
+	addNetworkFlag(listLbpsCmd)
 }

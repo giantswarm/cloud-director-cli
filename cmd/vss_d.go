@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -32,7 +33,7 @@ var (
 	cd-cli delete vs sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVs(args, failifabsent, yes, verbose)
+			vcd.DeleteVs(args, failifabsent, yes, verbose, network)
 		},
 	}
 )
@@ -40,4 +41,5 @@ var (
 func init() {
 	cleanCmd.AddCommand(delVssCmd)
 	delVssCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the virtual service is not there")
+	addNetworkFlag(delVssCmd)
 }

@@ -16,9 +16,10 @@ package vcd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
-	"log"
 )
 
 func ListAports(items bool) []*govcd.NsxtAppPortProfile {
@@ -40,7 +41,7 @@ func ListAports(items bool) []*govcd.NsxtAppPortProfile {
 	return aports
 }
 
-func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool) {
+func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool, network string) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Application Port Profile")
 	}
@@ -49,7 +50,7 @@ func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool) {
 	if e != nil {
 		log.Fatal(e)
 	}
-	gateway := getGatewayManager(c)
+	gateway := getGatewayManager(c, network)
 	if !yes {
 		fmt.Printf("Are you sure you want to delete following Application Port Profiles: %v [y/n]?\n", names)
 		var char rune
