@@ -17,6 +17,8 @@ package vcd
 import (
 	"context"
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
@@ -24,7 +26,7 @@ import (
 )
 
 func ListVs(items bool, network string) []*govcd.NsxtAlbVirtualService {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(items)
 	if e != nil {
 		log.Fatal(e)
@@ -61,7 +63,7 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool, network
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Virtual Service")
 	}
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -90,9 +92,9 @@ func PrintVs(output string, verbose bool, network string) {
 	items := ListVs(verbose, network)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, svc := range items {

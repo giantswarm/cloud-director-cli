@@ -16,13 +16,15 @@ package vcd
 
 import (
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 )
 
 func ListvApps(verbose bool) []*types.ResourceReference {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -36,7 +38,7 @@ func DeletevApp(names []string, yes bool, verbose bool) {
 		log.Fatal("Provide a name of the vApp")
 	}
 	name := names[0]
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -66,9 +68,9 @@ func PrintvApps(output string, verbose bool) {
 	items := ListvApps(verbose)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, vapp := range items {

@@ -17,6 +17,8 @@ package vcd
 import (
 	"context"
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
 	"os"
 	"strings"
@@ -25,7 +27,7 @@ import (
 )
 
 func ListLBPools(verboseClient bool, network string) []*govcd.NsxtAlbPool {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verboseClient)
 	if e != nil {
 		log.Fatal(e)
@@ -43,7 +45,7 @@ func DeleteLBPool(names []string, failIfAbsent bool, yes bool, verbose bool, cas
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a LB Pool")
 	}
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -83,9 +85,9 @@ func PrintLBPools(output string, verbose bool, network string) {
 	items := ListLBPools(verbose, network)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, lbpool := range items {

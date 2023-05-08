@@ -16,13 +16,15 @@ package vcd
 
 import (
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 	"net/url"
 )
 
 func ListDisks(verbose bool) []*types.DiskRecordType {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -41,7 +43,7 @@ func DeleteDisks(names []string, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -76,9 +78,9 @@ func PrintDisks(output string, verbose bool, unattached bool) {
 	items := ListDisks(verbose)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, d := range items {

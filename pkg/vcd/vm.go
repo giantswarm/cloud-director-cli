@@ -16,6 +16,8 @@ package vcd
 
 import (
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
@@ -23,7 +25,7 @@ import (
 )
 
 func ListVMs(verbose bool, onlyTemplates bool) []*types.QueryResultVMRecordType {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -45,7 +47,7 @@ func DeleteVMs(names []string, vapp string, yes bool, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -74,9 +76,9 @@ func PrintVMs(output string, verbose bool, onlyTemplates bool, vapp string) {
 	items := ListVMs(verbose, onlyTemplates)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, vm := range items {

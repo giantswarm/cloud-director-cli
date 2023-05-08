@@ -16,6 +16,8 @@ package vcd
 
 import (
 	"fmt"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -23,7 +25,7 @@ import (
 )
 
 func ListAports(items bool) []*govcd.NsxtAppPortProfile {
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(items)
 	if e != nil {
 		log.Fatal(e)
@@ -45,7 +47,7 @@ func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool, netw
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Application Port Profile")
 	}
-	cache := Cache{}
+	cache := client.Cache{}
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
@@ -74,9 +76,9 @@ func PrintAports(output string, verbose bool) {
 	items := ListAports(verbose)
 	switch output {
 	case "json":
-		PrintJson(items)
+		utils.PrintJson(items)
 	case "yaml":
-		PrintYaml(items)
+		utils.PrintYaml(items)
 	default:
 		var headerPrinted bool
 		for _, aport := range items {
