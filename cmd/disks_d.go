@@ -31,7 +31,7 @@ var (
 	cd-cli delete disks sdf1 sdf2 -y
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteDisks(args, yes, verbose)
+			vcd.DeleteDisks(args, verbose)
 		},
 	}
 )

@@ -33,7 +33,7 @@ func ListvApps(verbose bool) []*types.ResourceReference {
 	return vapps
 }
 
-func DeletevApp(names []string, yes bool, verbose bool) {
+func DeletevApp(names []string, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide a name of the vApp")
 	}
@@ -46,17 +46,6 @@ func DeletevApp(names []string, yes bool, verbose bool) {
 	m, err := vcdsdk.NewVDCManager(c, "", "")
 	if err != nil {
 		log.Fatal(err)
-	}
-	if !yes {
-		fmt.Printf("Are you sure you want to delete vApp '%s'[y/n]?\n", name)
-		var char rune
-		_, err := fmt.Scanf("%c", &char)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if char != 'y' && char != 'Y' {
-			return
-		}
 	}
 	err2 := m.DeleteVApp(name)
 	if err2 != nil {

@@ -15,8 +15,12 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 )
+
+var assumeYes bool
 
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
@@ -35,9 +39,26 @@ var cleanCmd = &cobra.Command{
 
 	cd-cli clean virtualservice --assumeyes guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp
 `,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		ensureDeletion(assumeYes, args)
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
-	cleanCmd.PersistentFlags().BoolVarP(&yes, "assumeyes", "y", false, "non-interactive mode assuming yes to all questions")
+	cleanCmd.PersistentFlags().BoolVarP(&assumeYes, "assumeyes", "y", false, "non-interactive mode assuming assumeYes to all questions")
+}
+
+func ensureDeletion(assumeYes bool, names []string) {
+	if !assumeYes {
+		fmt.Printf("Are you sure you want to delete following resources: %v [y/n]?\n", names)
+		var char rune
+		_, err := fmt.Scanf("%c", &char)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if char != 'y' && char != 'Y' {
+			return
+		}
+	}
 }

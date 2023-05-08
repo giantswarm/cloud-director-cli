@@ -21,7 +21,6 @@ import (
 
 var (
 	onlyTemplates bool
-	yes           bool
 	delVmsCmd     = &cobra.Command{
 		Use:     "vms -a vAppName VMname... ",
 		Aliases: []string{"vm"},
@@ -38,7 +37,7 @@ var (
 	cd-cli clean vms -y --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVMs(args, vapp, yes, verbose)
+			vcd.DeleteVMs(args, vapp, verbose)
 		},
 	}
 )

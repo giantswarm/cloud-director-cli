@@ -39,7 +39,7 @@ func ListDisks(verbose bool) []*types.DiskRecordType {
 	return results.Results.DiskRecord
 }
 
-func DeleteDisks(names []string, yes bool, verbose bool) {
+func DeleteDisks(names []string, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
@@ -47,17 +47,6 @@ func DeleteDisks(names []string, yes bool, verbose bool) {
 	c, e := cache.CachedClient(verbose)
 	if e != nil {
 		log.Fatal(e)
-	}
-	if !yes {
-		fmt.Printf("Are you sure you want to delete following disks: %v [y/n]?\n", names)
-		var char rune
-		_, err := fmt.Scanf("%c", &char)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if char != 'y' && char != 'Y' {
-			return
-		}
 	}
 	for _, name := range names {
 		disks, err := c.VDC.GetDisksByName(name, false)

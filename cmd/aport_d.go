@@ -32,7 +32,7 @@ var (
 	cd-cli delete aport sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteAport(args, failifabsent, yes, verbose, network)
+			vcd.DeleteAport(args, failifabsent, verbose, network)
 		},
 	}
 )

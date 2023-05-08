@@ -43,7 +43,7 @@ func ListAports(items bool) []*govcd.NsxtAppPortProfile {
 	return aports
 }
 
-func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool, network string) {
+func DeleteAport(names []string, failIfAbsent bool, verbose bool, network string) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Application Port Profile")
 	}
@@ -53,17 +53,6 @@ func DeleteAport(names []string, failIfAbsent bool, yes bool, verbose bool, netw
 		log.Fatal(e)
 	}
 	gateway := getGatewayManager(c, network)
-	if !yes {
-		fmt.Printf("Are you sure you want to delete following Application Port Profiles: %v [y/n]?\n", names)
-		var char rune
-		_, err := fmt.Scanf("%c", &char)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if char != 'y' && char != 'Y' {
-			return
-		}
-	}
 	for _, a := range names {
 		err := gateway.DeleteAppPortProfile(a, failIfAbsent)
 		if err != nil {

@@ -43,7 +43,7 @@ func ListVMs(verbose bool, onlyTemplates bool) []*types.QueryResultVMRecordType 
 	return vms
 }
 
-func DeleteVMs(names []string, vapp string, yes bool, verbose bool) {
+func DeleteVMs(names []string, vapp string, verbose bool) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a VM")
 	}
@@ -55,17 +55,6 @@ func DeleteVMs(names []string, vapp string, yes bool, verbose bool) {
 	m, err := vcdsdk.NewVDCManager(c, "", "")
 	if err != nil {
 		log.Fatal(err)
-	}
-	if !yes {
-		fmt.Printf("Are you sure you want to delete following VMs: %v [y/n]?\n", names)
-		var char rune
-		_, err := fmt.Scanf("%c", &char)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if char != 'y' && char != 'Y' {
-			return
-		}
 	}
 	for _, vm := range names {
 		m.DeleteVM(vapp, vm)

@@ -59,7 +59,7 @@ func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager 
 	return gateway
 }
 
-func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool, network string) {
+func DeleteVs(names []string, failIfAbsent bool, verbose bool, network string) {
 	if len(names) == 0 {
 		log.Fatal("Provide at least 1 name of a Virtual Service")
 	}
@@ -69,17 +69,6 @@ func DeleteVs(names []string, failIfAbsent bool, yes bool, verbose bool, network
 		log.Fatal(e)
 	}
 	gateway := getGatewayManager(c, network)
-	if !yes {
-		fmt.Printf("Are you sure you want to delete following Virtual Services: %v [y/n]?\n", names)
-		var char rune
-		_, err := fmt.Scanf("%c", &char)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if char != 'y' && char != 'Y' {
-			return
-		}
-	}
 	for _, vs := range names {
 		err := gateway.DeleteVirtualService(context.Background(), vs, failIfAbsent)
 		if err != nil {
