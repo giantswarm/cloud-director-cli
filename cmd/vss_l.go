@@ -39,7 +39,6 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintVs(output, verbose, network)
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

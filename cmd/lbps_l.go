@@ -43,7 +43,6 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintLBPools(output, verbose, network)
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -39,7 +40,6 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			vcd.PrintDisks(output, verbose, unattached)
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

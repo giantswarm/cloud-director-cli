@@ -36,7 +36,7 @@ var (
 	cd-cli list vms -v
 	cd-cli list disks
 `,
-		PreRun: ValidateOutput,
+		PersistentPreRun: validateOutput,
 	}
 )
 
@@ -45,7 +45,7 @@ func init() {
 	listCmd.PersistentFlags().StringVarP(&output, "output", "o", "names", "Output format. One of: (json, yaml, names, columns)")
 }
 
-func ValidateOutput(cmd *cobra.Command, _ []string) {
+func validateOutput(cmd *cobra.Command, _ []string) {
 	switch cmd.Flag("output").Value.String() {
 	case "json", "yaml", "names", "columns": //no-op
 	default:
