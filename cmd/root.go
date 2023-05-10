@@ -18,12 +18,14 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	verbose bool
-	rootCmd = &cobra.Command{
+	verbose   bool
+	vcdClient *vcdsdk.Client
+	rootCmd   = &cobra.Command{
 		Use:   "cd-cli",
 		Short: "Simple cli tool that communicates with cloud director",
 		Long: `cd-cli simple cli tool that communicates with cloud director

@@ -17,22 +17,21 @@ package vcd
 import (
 	"context"
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 )
 
-func ListVs(items bool, network string) []*govcd.NsxtAlbVirtualService {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(items)
-	if e != nil {
-		log.Fatal(e)
-	}
-	gateway := getGatewayManager(c, network)
-	vSvcs, err := c.VCDClient.GetAllAlbVirtualServices(gateway.GatewayRef.Id, nil)
+type VirtualServiceManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *VirtualServiceManager) List(network string) []*govcd.NsxtAlbVirtualService {
+	gateway := getGatewayManager(manager.Client, network)
+	vSvcs, err := manager.Client.VCDClient.GetAllAlbVirtualServices(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,16 +58,8 @@ func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager 
 	return gateway
 }
 
-func DeleteVs(names []string, failIfAbsent bool, verbose bool, network string) {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a Virtual Service")
-	}
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	gateway := getGatewayManager(c, network)
+func (manager *VirtualServiceManager) Delete(names []string, failIfAbsent bool, verbose bool, network string) {
+	gateway := getGatewayManager(manager.Client, network)
 	for _, vs := range names {
 		err := gateway.DeleteVirtualService(context.Background(), vs, failIfAbsent)
 		if err != nil {
@@ -77,8 +68,7 @@ func DeleteVs(names []string, failIfAbsent bool, verbose bool, network string) {
 	}
 }
 
-func PrintVs(output string, verbose bool, network string) {
-	items := ListVs(verbose, network)
+func (manager *VirtualServiceManager) Print(output string, items []*govcd.NsxtAlbVirtualService) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

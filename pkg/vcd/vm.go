@@ -16,53 +16,46 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
-func ListVMs(verbose bool, onlyTemplates bool) []*types.QueryResultVMRecordType {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
+type VmManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *VmManager) List(onlyTemplates bool) []*types.QueryResultVMRecordType {
 	var filter types.VmQueryFilter
 	if onlyTemplates {
 		filter = types.VmQueryFilterOnlyTemplates
 	} else {
 		filter = types.VmQueryFilterOnlyDeployed
 	}
-	vms, err := c.VDC.QueryVmList(filter)
+	vms, err := manager.Client.VDC.QueryVmList(filter)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return vms
 }
 
-func DeleteVMs(names []string, vapp string, verbose bool) {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a VM")
-	}
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	m, err := vcdsdk.NewVDCManager(c, "", "")
+func (manager *VmManager) Delete(names []string, vapp string, verbose bool) {
+	m, err := vcdsdk.NewVDCManager(manager.Client, "", "")
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, vm := range names {
-		m.DeleteVM(vapp, vm)
+		err = m.DeleteVM(vapp, vm)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func PrintVMs(output string, verbose bool, onlyTemplates bool, vapp string) {
-	items := ListVMs(verbose, onlyTemplates)
+func (manager *VmManager) Print(output string, items []*types.QueryResultVMRecordType, vapp string) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

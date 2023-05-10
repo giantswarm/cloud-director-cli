@@ -33,7 +33,11 @@ var (
 
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintAports(output, verbose)
+			manager := vcd.AppPortManager{
+				Client: vcdClient,
+			}
+			items := manager.List()
+			manager.Print(output, items)
 		},
 	}
 )

@@ -41,7 +41,11 @@ var (
 	squid-proxy
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVMs(output, verbose, onlyTemplates, vapp)
+			manager := vcd.VmManager{
+				Client: vcdClient,
+			}
+			items := manager.List(onlyTemplates)
+			manager.Print(output, items, vapp)
 		},
 	}
 )

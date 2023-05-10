@@ -16,8 +16,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
 )
 
 var assumeYes bool
@@ -40,6 +43,7 @@ var cleanCmd = &cobra.Command{
 	cd-cli clean virtualservice --assumeyes guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		vcdClient = client.NewClient(verbose)
 		ensureDeletion(assumeYes, args)
 	},
 }
@@ -50,6 +54,10 @@ func init() {
 }
 
 func ensureDeletion(assumeYes bool, names []string) {
+	if len(names) == 0 {
+		log.Fatal("Provide at least 1 name")
+	}
+
 	if !assumeYes {
 		fmt.Printf("Are you sure you want to delete following resources: %v [y/n]?\n", names)
 		var char rune

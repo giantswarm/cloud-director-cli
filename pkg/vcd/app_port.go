@@ -16,23 +16,22 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
+
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
-func ListAports(items bool) []*govcd.NsxtAppPortProfile {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(items)
-	if e != nil {
-		log.Fatal(e)
-	}
-	//gateway := getGatewayManager(c)
-	//gateway.DeleteAppPortProfile()
-	org, err := c.VCDClient.GetOrgByName(c.ClusterOrgName)
+type AppPortManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *AppPortManager) List() []*govcd.NsxtAppPortProfile {
+	org, err := manager.Client.VCDClient.GetOrgByName(manager.Client.ClusterOrgName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,16 +42,8 @@ func ListAports(items bool) []*govcd.NsxtAppPortProfile {
 	return aports
 }
 
-func DeleteAport(names []string, failIfAbsent bool, verbose bool, network string) {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a Application Port Profile")
-	}
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	gateway := getGatewayManager(c, network)
+func (manager *AppPortManager) Delete(names []string, failIfAbsent bool, network string) {
+	gateway := getGatewayManager(manager.Client, network)
 	for _, a := range names {
 		err := gateway.DeleteAppPortProfile(a, failIfAbsent)
 		if err != nil {
@@ -61,8 +52,7 @@ func DeleteAport(names []string, failIfAbsent bool, verbose bool, network string
 	}
 }
 
-func PrintAports(output string, verbose bool) {
-	items := ListAports(verbose)
+func (manager *AppPortManager) Print(output string, items []*govcd.NsxtAppPortProfile) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

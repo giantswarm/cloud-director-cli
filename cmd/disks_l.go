@@ -38,7 +38,11 @@ var (
 	...
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintDisks(output, verbose, unattached)
+			manager := vcd.DiskManager{
+				Client: vcdClient,
+			}
+			items := manager.List()
+			manager.Print(output, unattached, items)
 		},
 	}
 )

@@ -36,7 +36,11 @@ var (
 	gs-eric-vcd                        	urn:vcloud:vapp:26f79f84-908b-4ee8-88a9-36d5066175f8
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintvApps(output, verbose)
+			manager := vcd.VappManager{
+				Client: vcdClient,
+			}
+			items := manager.List()
+			manager.Print(output, items)
 		},
 	}
 )

@@ -37,7 +37,11 @@ var (
 	ingress-vs-nginx-ingress-controller-app--http                                             	192.168.8.4      	UP
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVs(output, verbose, network)
+			manager := vcd.VirtualServiceManager{
+				Client: vcdClient,
+			}
+			items := manager.List(network)
+			manager.Print(output, items)
 		},
 	}
 )

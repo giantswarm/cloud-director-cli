@@ -107,3 +107,12 @@ func (cache *Cache) CachedClient(items bool) (*vcdsdk.Client, error) {
 	cache.lazyInit(items)
 	return cache.client, nil
 }
+
+func NewClient(verbose bool) *vcdsdk.Client {
+	cache := Cache{}
+	c, e := cache.CachedClient(verbose)
+	if e != nil {
+		log.Fatal(e)
+	}
+	return c
+}

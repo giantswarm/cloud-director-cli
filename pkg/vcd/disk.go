@@ -16,22 +16,23 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
-	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"log"
 	"net/url"
+
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
-func ListDisks(verbose bool) []*types.DiskRecordType {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	filter := "vdc==" + url.QueryEscape(c.VDC.Vdc.HREF)
+type DiskManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *DiskManager) List() []*types.DiskRecordType {
+	filter := "vdc==" + url.QueryEscape(manager.Client.VDC.Vdc.HREF)
 	notEncodedParams := map[string]string{"type": "disk", "filter": filter, "filterEncoded": "true"}
-	results, err := c.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,17 +40,9 @@ func ListDisks(verbose bool) []*types.DiskRecordType {
 	return results.Results.DiskRecord
 }
 
-func DeleteDisks(names []string, verbose bool) {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a VM")
-	}
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
+func (manager *DiskManager) Delete(names []string) {
 	for _, name := range names {
-		disks, err := c.VDC.GetDisksByName(name, false)
+		disks, err := manager.Client.VDC.GetDisksByName(name, false)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -63,8 +56,7 @@ func DeleteDisks(names []string, verbose bool) {
 	}
 }
 
-func PrintDisks(output string, verbose bool, unattached bool) {
-	items := ListDisks(verbose)
+func (manager *DiskManager) Print(output string, unattached bool, items []*types.DiskRecordType) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

@@ -16,45 +16,38 @@ package vcd
 
 import (
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
+	"log"
+
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
-	"log"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
-func ListvApps(verbose bool) []*types.ResourceReference {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	vapps := c.VDC.GetVappList()
+type VappManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *VappManager) List() []*types.ResourceReference {
+	vapps := manager.Client.VDC.GetVappList()
 	return vapps
 }
 
-func DeletevApp(names []string, verbose bool) {
-	if len(names) == 0 {
-		log.Fatal("Provide a name of the vApp")
-	}
-	name := names[0]
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	m, err := vcdsdk.NewVDCManager(c, "", "")
+func (manager *VappManager) Delete(names []string) {
+	m, err := vcdsdk.NewVDCManager(manager.Client, "", "")
 	if err != nil {
 		log.Fatal(err)
 	}
-	err2 := m.DeleteVApp(name)
-	if err2 != nil {
-		log.Fatal(err2)
+
+	for _, name := range names {
+		err2 := m.DeleteVApp(name)
+		if err2 != nil {
+			log.Fatal(err2)
+		}
 	}
 }
 
-func PrintvApps(output string, verbose bool) {
-	items := ListvApps(verbose)
+func (manager *VappManager) Print(output string, items []*types.ResourceReference) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

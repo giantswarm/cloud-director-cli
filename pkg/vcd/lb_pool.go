@@ -17,23 +17,24 @@ package vcd
 import (
 	"context"
 	"fmt"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 	"log"
 	"os"
 	"strings"
 
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
+
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 )
 
-func ListLBPools(verboseClient bool, network string) []*govcd.NsxtAlbPool {
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verboseClient)
-	if e != nil {
-		log.Fatal(e)
-	}
-	gateway := getGatewayManager(c, network)
-	lbPoos, err := c.VCDClient.GetAllAlbPools(gateway.GatewayRef.Id, nil)
+type LoadBalancerPoolManager struct {
+	Client *vcdsdk.Client
+}
+
+func (manager *LoadBalancerPoolManager) List(network string) []*govcd.NsxtAlbPool {
+	gateway := getGatewayManager(manager.Client, network)
+	lbPoos, err := manager.Client.VCDClient.GetAllAlbPools(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,16 +42,12 @@ func ListLBPools(verboseClient bool, network string) []*govcd.NsxtAlbPool {
 	return lbPoos
 }
 
-func DeleteLBPool(names []string, failIfAbsent bool, verbose bool, cascade bool, network string) {
-	if len(names) == 0 {
-		log.Fatal("Provide at least 1 name of a LB Pool")
+func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool, verbose bool, cascade bool, network string) {
+	gateway := getGatewayManager(manager.Client, network)
+	vsManager := VirtualServiceManager{
+		Client: manager.Client,
 	}
-	cache := client.Cache{}
-	c, e := cache.CachedClient(verbose)
-	if e != nil {
-		log.Fatal(e)
-	}
-	gateway := getGatewayManager(c, network)
+
 	for _, lb := range names {
 		err := gateway.DeleteLoadBalancerPool(context.Background(), lb, failIfAbsent)
 		if err != nil {
@@ -61,8 +58,8 @@ func DeleteLBPool(names []string, failIfAbsent bool, verbose bool, cascade bool,
 				}
 				// try to delete the associated virtual services first and then re-try
 				fmt.Printf("Trying to delete the Virtual Services %v first\n", names)
-				DeleteVs(names, failIfAbsent, verbose, network)
-				DeleteLBPool(names, failIfAbsent, verbose, false, network)
+				vsManager.Delete(names, failIfAbsent, verbose, network)
+				manager.Delete(names, failIfAbsent, verbose, false, network)
 			} else {
 				log.Fatal(err)
 			}
@@ -70,8 +67,7 @@ func DeleteLBPool(names []string, failIfAbsent bool, verbose bool, cascade bool,
 	}
 }
 
-func PrintLBPools(output string, verbose bool, network string) {
-	items := ListLBPools(verbose, network)
+func (manager *LoadBalancerPoolManager) Print(output string, items []*govcd.NsxtAlbPool) {
 	switch output {
 	case "json":
 		utils.PrintJson(items)

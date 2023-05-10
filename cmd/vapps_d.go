@@ -15,8 +15,9 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
@@ -35,7 +36,10 @@ var (
 Previous command deletes the vApp 'jiri3' itself and all its related VMs if there are any.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeletevApp(args, verbose)
+			manager := vcd.VappManager{
+				Client: vcdClient,
+			}
+			manager.Delete(args)
 		},
 	}
 )

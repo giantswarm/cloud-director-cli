@@ -19,6 +19,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
 )
 
 // listCmd represents the list command
@@ -36,7 +38,10 @@ var (
 	cd-cli list vms -v
 	cd-cli list disks
 `,
-		PersistentPreRun: validateOutput,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			vcdClient = client.NewClient(verbose)
+			validateOutput(cmd)
+		},
 	}
 )
 
@@ -45,7 +50,7 @@ func init() {
 	listCmd.PersistentFlags().StringVarP(&output, "output", "o", "names", "Output format. One of: (json, yaml, names, columns)")
 }
 
-func validateOutput(cmd *cobra.Command, _ []string) {
+func validateOutput(cmd *cobra.Command) {
 	switch cmd.Flag("output").Value.String() {
 	case "json", "yaml", "names", "columns": //no-op
 	default:
