@@ -16,36 +16,25 @@ package vcd
 
 import (
 	"log"
-	"net/url"
+	"net/http"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
-type VappManager struct {
+type MetadataManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *VappManager) List() []*types.QueryResultVAppRecordType {
-	filter := "vdc==" + url.QueryEscape(manager.Client.VDC.Vdc.HREF)
-	notEncodedParams := map[string]string{"type": "vApp", "filter": filter, "filterEncoded": "true"}
-	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+func (manager *MetadataManager) List(href string) []*types.MetadataEntry {
+	metadata := &types.Metadata{}
+	_, err := manager.Client.VCDClient.Client.ExecuteRequest(href+"/metadata/", http.MethodGet, types.MimeMetaData, "error retrieving metadata: %s", nil, metadata)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return results.Results.VAppRecord
-}
-
-func (manager *VappManager) Delete(names []string) {
-	m, err := vcdsdk.NewVDCManager(manager.Client, "", "")
-	if err != nil {
-		log.Fatal(err)
+	// hide for cleaner output
+	for _, item := range metadata.MetadataEntry {
+		item.Link = nil
 	}
-
-	for _, name := range names {
-		err = m.DeleteVApp(name)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+	return metadata.MetadataEntry
 }

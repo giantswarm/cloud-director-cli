@@ -25,8 +25,7 @@ import (
 
 // listCmd represents the list command
 var (
-	outputFormat string
-	network      string
+	network string
 
 	listCmd = &cobra.Command{
 		Use:     "list",

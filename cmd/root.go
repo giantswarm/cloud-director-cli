@@ -15,7 +15,7 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
@@ -23,9 +23,10 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	verbose   bool
-	vcdClient *vcdsdk.Client
-	rootCmd   = &cobra.Command{
+	verbose      bool
+	outputFormat string
+	vcdClient    *vcdsdk.Client
+	rootCmd      = &cobra.Command{
 		Use:   "cd-cli",
 		Short: "Simple cli tool that communicates with cloud director",
 		Long: `cd-cli simple cli tool that communicates with cloud director
@@ -44,7 +45,7 @@ var (
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
