@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -41,8 +42,12 @@ var (
 			manager := vcd.DiskManager{
 				Client: vcdClient,
 			}
-			items := manager.List()
-			manager.Print(outputFormat, unattached, items)
+
+			items := manager.List(vcd.DiskListParams{Unattached: unattached})
+
+			utils.Print(outputFormat, items, "Name",
+				[]string{"NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE"},
+				[]string{"Name", "SizeMb", "Status", "AttachedVmCount", "BusTypeDesc"})
 		},
 	}
 )

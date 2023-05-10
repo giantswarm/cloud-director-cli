@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -44,8 +45,13 @@ var (
 			manager := vcd.VmManager{
 				Client: vcdClient,
 			}
-			items := manager.List(onlyTemplates)
-			manager.Print(outputFormat, items, vapp)
+			items := manager.List(vcd.VmListParams{
+				OnlyTemplate: onlyTemplates,
+				Vapp:         vapp,
+			})
+			utils.Print(outputFormat, items, "Name",
+				[]string{"NAME", "VAPP", "STATUS", "DEPLOYED", "IP"},
+				[]string{"Name", "ContainerName", "Status", "Deployed", "IpAddress"})
 		},
 	}
 )

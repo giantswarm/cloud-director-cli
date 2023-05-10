@@ -19,24 +19,31 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
-
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
 type VirtualServiceManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *VirtualServiceManager) List(network string) []*govcd.NsxtAlbVirtualService {
-	gateway := getGatewayManager(manager.Client, network)
+type VirtualServiceListParams struct {
+	Network string
+}
+
+func (manager *VirtualServiceManager) List(params VirtualServiceListParams) []*types.NsxtAlbVirtualService {
+	gateway := getGatewayManager(manager.Client, params.Network)
 	vSvcs, err := manager.Client.VCDClient.GetAllAlbVirtualServices(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return vSvcs
+	result := make([]*types.NsxtAlbVirtualService, len(vSvcs))
+	for i, vs := range vSvcs {
+		result[i] = vs.NsxtAlbVirtualService
+	}
+
+	return result
 }
 
 func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager {
@@ -58,35 +65,12 @@ func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager 
 	return gateway
 }
 
-func (manager *VirtualServiceManager) Delete(names []string, failIfAbsent bool, verbose bool, network string) {
+func (manager *VirtualServiceManager) Delete(names []string, failIfAbsent bool, network string) {
 	gateway := getGatewayManager(manager.Client, network)
 	for _, vs := range names {
 		err := gateway.DeleteVirtualService(context.Background(), vs, failIfAbsent)
 		if err != nil {
 			log.Fatal(err)
-		}
-	}
-}
-
-func (manager *VirtualServiceManager) Print(outputFormat string, items []*govcd.NsxtAlbVirtualService) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, svc := range items {
-			if outputFormat == "names" {
-				fmt.Println(svc.NsxtAlbVirtualService.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-90s\t%-17s\t%-14s\t\n", "NAME", "IP", "HEALTH")
-					headerPrinted = true
-				}
-				s := svc.NsxtAlbVirtualService
-				fmt.Printf("%-90s\t%-17s\t%v\t\n", s.Name, s.VirtualIpAddress, s.HealthStatus)
-			}
 		}
 	}
 }

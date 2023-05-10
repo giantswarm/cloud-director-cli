@@ -15,7 +15,6 @@ limitations under the License.
 package vcd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
@@ -28,9 +27,14 @@ type VmManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *VmManager) List(onlyTemplates bool) []*types.QueryResultVMRecordType {
+type VmListParams struct {
+	Vapp         string
+	OnlyTemplate bool
+}
+
+func (manager *VmManager) List(params VmListParams) []*types.QueryResultVMRecordType {
 	var filter types.VmQueryFilter
-	if onlyTemplates {
+	if params.OnlyTemplate {
 		filter = types.VmQueryFilterOnlyTemplates
 	} else {
 		filter = types.VmQueryFilterOnlyDeployed
@@ -39,10 +43,17 @@ func (manager *VmManager) List(onlyTemplates bool) []*types.QueryResultVMRecordT
 	if err != nil {
 		log.Fatal(err)
 	}
-	return vms
+
+	if params.Vapp == "" {
+		return vms
+	} else {
+		return utils.Filter(vms, func(recordType *types.QueryResultVMRecordType) bool {
+			return recordType.ContainerName == params.Vapp
+		})
+	}
 }
 
-func (manager *VmManager) Delete(names []string, vapp string, verbose bool) {
+func (manager *VmManager) Delete(names []string, vapp string) {
 	m, err := vcdsdk.NewVDCManager(manager.Client, "", "")
 	if err != nil {
 		log.Fatal(err)
@@ -51,31 +62,6 @@ func (manager *VmManager) Delete(names []string, vapp string, verbose bool) {
 		err = m.DeleteVM(vapp, vm)
 		if err != nil {
 			log.Fatal(err)
-		}
-	}
-}
-
-func (manager *VmManager) Print(outputFormat string, items []*types.QueryResultVMRecordType, vapp string) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, vm := range items {
-			if vapp != "" && vm.ContainerName != vapp {
-				continue
-			}
-			if outputFormat == "names" {
-				fmt.Println(vm.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-35s\t%-16s\t%-10s\t%-8s\t%-16s\t\n", "NAME", "VAPP", "STATUS", "DEPLOYED", "IP")
-					headerPrinted = true
-				}
-				fmt.Printf("%-35s\t%-16s\t%-10s\t%-8t\t%-16s\t\n", vm.Name, vm.ContainerName, vm.Status, vm.Deployed, vm.IpAddress)
-			}
 		}
 	}
 }

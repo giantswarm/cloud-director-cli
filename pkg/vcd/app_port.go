@@ -15,14 +15,10 @@ limitations under the License.
 package vcd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
-
-	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
@@ -30,7 +26,7 @@ type AppPortManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *AppPortManager) List() []*govcd.NsxtAppPortProfile {
+func (manager *AppPortManager) List() []*types.NsxtAppPortProfile {
 	org, err := manager.Client.VCDClient.GetOrgByName(manager.Client.ClusterOrgName)
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +35,13 @@ func (manager *AppPortManager) List() []*govcd.NsxtAppPortProfile {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return aports
+
+	result := make([]*types.NsxtAppPortProfile, len(aports))
+	for i, aport := range aports {
+		result[i] = aport.NsxtAppPortProfile
+	}
+
+	return result
 }
 
 func (manager *AppPortManager) Delete(names []string, failIfAbsent bool, network string) {
@@ -48,37 +50,6 @@ func (manager *AppPortManager) Delete(names []string, failIfAbsent bool, network
 		err := gateway.DeleteAppPortProfile(a, failIfAbsent)
 		if err != nil {
 			log.Fatal(err)
-		}
-	}
-}
-
-func (manager *AppPortManager) Print(outputFormat string, items []*govcd.NsxtAppPortProfile) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, aport := range items {
-			if outputFormat == "names" {
-				fmt.Println(aport.NsxtAppPortProfile.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-110s\t%-8s\t%-14s\t\n", "NAME", "PROTOCOL", "PORTS")
-					headerPrinted = true
-				}
-				a := aport.NsxtAppPortProfile
-				protocol := "unknown"
-				port := "unknown"
-				if len(a.ApplicationPorts) > 0 {
-					protocol = a.ApplicationPorts[0].Protocol
-					if len(a.ApplicationPorts[0].DestinationPorts) > 0 {
-						port = a.ApplicationPorts[0].DestinationPorts[0]
-					}
-				}
-				fmt.Printf("%-110s\t%-8s\t%s\t\n", a.Name, protocol, port)
-			}
 		}
 	}
 }

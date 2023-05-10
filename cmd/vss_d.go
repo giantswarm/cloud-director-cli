@@ -36,7 +36,7 @@ var (
 			manager := vcd.VirtualServiceManager{
 				Client: vcdClient,
 			}
-			manager.Delete(args, failifabsent, verbose, network)
+			manager.Delete(args, failifabsent, network)
 		},
 	}
 )

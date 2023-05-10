@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -44,8 +45,10 @@ var (
 			manager := vcd.LoadBalancerPoolManager{
 				Client: vcdClient,
 			}
-			items := manager.List(network)
-			manager.Print(outputFormat, items)
+			items := manager.List(vcd.LBListParams{Network: network})
+			utils.Print(outputFormat, items, "name",
+				[]string{"NAME", "ALGOTITHM", "MEMBERS", "ENABLED"},
+				[]string{"name", "algorithm", "memberCount", "enabled"})
 		},
 	}
 )

@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -40,8 +41,10 @@ var (
 			manager := vcd.VirtualServiceManager{
 				Client: vcdClient,
 			}
-			items := manager.List(network)
-			manager.Print(outputFormat, items)
+			items := manager.List(vcd.VirtualServiceListParams{Network: network})
+			utils.Print(outputFormat, items, "name",
+				[]string{"NAME", "IP", "HEALTH"},
+				[]string{"name", "virtualIpAddress", "healthStatus"})
 		},
 	}
 )

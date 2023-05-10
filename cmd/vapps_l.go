@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -40,7 +41,9 @@ var (
 				Client: vcdClient,
 			}
 			items := manager.List()
-			manager.Print(outputFormat, items)
+			utils.Print(outputFormat, items, "Name",
+				[]string{"NAME", "ID"},
+				[]string{"Name", "ID"})
 		},
 	}
 )

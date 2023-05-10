@@ -15,22 +15,26 @@ limitations under the License.
 package vcd
 
 import (
-	"fmt"
 	"log"
+	"net/url"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
-
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 type VappManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *VappManager) List() []*types.ResourceReference {
-	vapps := manager.Client.VDC.GetVappList()
-	return vapps
+func (manager *VappManager) List() []*types.QueryResultVAppRecordType {
+	filter := "vdc==" + url.QueryEscape(manager.Client.VDC.Vdc.HREF)
+	notEncodedParams := map[string]string{"type": "vApp", "filter": filter, "filterEncoded": "true"}
+	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return results.Results.VAppRecord
 }
 
 func (manager *VappManager) Delete(names []string) {
@@ -40,31 +44,9 @@ func (manager *VappManager) Delete(names []string) {
 	}
 
 	for _, name := range names {
-		err2 := m.DeleteVApp(name)
-		if err2 != nil {
-			log.Fatal(err2)
-		}
-	}
-}
-
-func (manager *VappManager) Print(outputFormat string, items []*types.ResourceReference) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, vapp := range items {
-			if outputFormat == "names" {
-				fmt.Println(vapp.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-35s\t%-16s\t\n", "NAME", "ID")
-					headerPrinted = true
-				}
-				fmt.Printf("%-35s\t%-16s\t\n", vapp.Name, vapp.ID)
-			}
+		err = m.DeleteVApp(name)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 }

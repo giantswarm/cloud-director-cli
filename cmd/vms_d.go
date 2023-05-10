@@ -41,7 +41,7 @@ var (
 			manager := vcd.VmManager{
 				Client: vcdClient,
 			}
-			manager.Delete(args, vapp, verbose)
+			manager.Delete(args, vapp)
 		},
 	}
 )

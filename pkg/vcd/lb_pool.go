@@ -22,24 +22,30 @@ import (
 	"strings"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
-
-	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
 type LoadBalancerPoolManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *LoadBalancerPoolManager) List(network string) []*govcd.NsxtAlbPool {
-	gateway := getGatewayManager(manager.Client, network)
-	lbPoos, err := manager.Client.VCDClient.GetAllAlbPools(gateway.GatewayRef.Id, nil)
+type LBListParams struct {
+	Network string
+}
+
+func (manager *LoadBalancerPoolManager) List(params LBListParams) []*types.NsxtAlbPool {
+	gateway := getGatewayManager(manager.Client, params.Network)
+	lbPools, err := manager.Client.VCDClient.GetAllAlbPools(gateway.GatewayRef.Id, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return lbPoos
+	result := make([]*types.NsxtAlbPool, len(lbPools))
+	for i, lbPool := range lbPools {
+		result[i] = lbPool.NsxtAlbPool
+	}
+
+	return result
 }
 
 func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool, verbose bool, cascade bool, network string) {
@@ -58,33 +64,10 @@ func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool
 				}
 				// try to delete the associated virtual services first and then re-try
 				fmt.Printf("Trying to delete the Virtual Services %v first\n", names)
-				vsManager.Delete(names, failIfAbsent, verbose, network)
+				vsManager.Delete(names, failIfAbsent, network)
 				manager.Delete(names, failIfAbsent, verbose, false, network)
 			} else {
 				log.Fatal(err)
-			}
-		}
-	}
-}
-
-func (manager *LoadBalancerPoolManager) Print(outputFormat string, items []*govcd.NsxtAlbPool) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, lbpool := range items {
-			if outputFormat == "names" {
-				fmt.Println(lbpool.NsxtAlbPool.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-90s\t%-17s\t%-9s\t%s\t\n", "NAME", "ALGOTITHM", "MEMBERS", "ENABLED")
-					headerPrinted = true
-				}
-				l := lbpool.NsxtAlbPool
-				fmt.Printf("%-90s\t%-17s\t%-9v\t%t\t\n", l.Name, l.Algorithm, l.MemberCount, *l.Enabled)
 			}
 		}
 	}

@@ -21,16 +21,21 @@ import (
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
-
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 type DiskManager struct {
 	Client *vcdsdk.Client
 }
 
-func (manager *DiskManager) List() []*types.DiskRecordType {
+type DiskListParams struct {
+	Unattached bool
+}
+
+func (manager *DiskManager) List(params DiskListParams) []*types.DiskRecordType {
 	filter := "vdc==" + url.QueryEscape(manager.Client.VDC.Vdc.HREF)
+	if params.Unattached {
+		filter = filter + ",attachedVmCount==0"
+	}
 	notEncodedParams := map[string]string{"type": "disk", "filter": filter, "filterEncoded": "true"}
 	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
 	if err != nil {
@@ -52,31 +57,6 @@ func (manager *DiskManager) Delete(names []string) {
 				log.Fatal(e)
 			}
 			fmt.Printf("delete task was created: %s\n", t.Task.ID)
-		}
-	}
-}
-
-func (manager *DiskManager) Print(outputFormat string, unattached bool, items []*types.DiskRecordType) {
-	switch outputFormat {
-	case "json":
-		utils.PrintJson(items)
-	case "yaml":
-		utils.PrintYaml(items)
-	default:
-		var headerPrinted bool
-		for _, d := range items {
-			if unattached && d.AttachedVmCount > 0 {
-				continue
-			}
-			if outputFormat == "names" {
-				fmt.Println(d.Name)
-			} else {
-				if !headerPrinted {
-					fmt.Printf("%-45s\t%-10s\t%-10s\t%s\t%-10s\t\n", "NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE")
-					headerPrinted = true
-				}
-				fmt.Printf("%-45s\t%-10d\t%-10s\t%d\t%-10s\t\n", d.Name, d.SizeMb, d.Status, d.AttachedVmCount, d.BusTypeDesc)
-			}
 		}
 	}
 }

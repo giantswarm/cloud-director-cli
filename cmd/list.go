@@ -27,7 +27,8 @@ import (
 var (
 	outputFormat string
 	network      string
-	listCmd      = &cobra.Command{
+
+	listCmd = &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"get"},
 		Short:   "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
