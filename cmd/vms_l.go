@@ -45,7 +45,7 @@ var (
 				Client: vcdClient,
 			}
 			items := manager.List(onlyTemplates)
-			manager.Print(output, items, vapp)
+			manager.Print(outputFormat, items, vapp)
 		},
 	}
 )

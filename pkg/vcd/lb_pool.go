@@ -67,8 +67,8 @@ func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool
 	}
 }
 
-func (manager *LoadBalancerPoolManager) Print(output string, items []*govcd.NsxtAlbPool) {
-	switch output {
+func (manager *LoadBalancerPoolManager) Print(outputFormat string, items []*govcd.NsxtAlbPool) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -76,7 +76,7 @@ func (manager *LoadBalancerPoolManager) Print(output string, items []*govcd.Nsxt
 	default:
 		var headerPrinted bool
 		for _, lbpool := range items {
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(lbpool.NsxtAlbPool.Name)
 			} else {
 				if !headerPrinted {

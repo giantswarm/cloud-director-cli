@@ -55,8 +55,8 @@ func (manager *VmManager) Delete(names []string, vapp string, verbose bool) {
 	}
 }
 
-func (manager *VmManager) Print(output string, items []*types.QueryResultVMRecordType, vapp string) {
-	switch output {
+func (manager *VmManager) Print(outputFormat string, items []*types.QueryResultVMRecordType, vapp string) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -67,7 +67,7 @@ func (manager *VmManager) Print(output string, items []*types.QueryResultVMRecor
 			if vapp != "" && vm.ContainerName != vapp {
 				continue
 			}
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(vm.Name)
 			} else {
 				if !headerPrinted {

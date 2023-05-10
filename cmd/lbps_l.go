@@ -45,7 +45,7 @@ var (
 				Client: vcdClient,
 			}
 			items := manager.List(network)
-			manager.Print(output, items)
+			manager.Print(outputFormat, items)
 		},
 	}
 )

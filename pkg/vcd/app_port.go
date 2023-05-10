@@ -52,8 +52,8 @@ func (manager *AppPortManager) Delete(names []string, failIfAbsent bool, network
 	}
 }
 
-func (manager *AppPortManager) Print(output string, items []*govcd.NsxtAppPortProfile) {
-	switch output {
+func (manager *AppPortManager) Print(outputFormat string, items []*govcd.NsxtAppPortProfile) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -61,7 +61,7 @@ func (manager *AppPortManager) Print(output string, items []*govcd.NsxtAppPortPr
 	default:
 		var headerPrinted bool
 		for _, aport := range items {
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(aport.NsxtAppPortProfile.Name)
 			} else {
 				if !headerPrinted {

@@ -47,8 +47,8 @@ func (manager *VappManager) Delete(names []string) {
 	}
 }
 
-func (manager *VappManager) Print(output string, items []*types.ResourceReference) {
-	switch output {
+func (manager *VappManager) Print(outputFormat string, items []*types.ResourceReference) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -56,7 +56,7 @@ func (manager *VappManager) Print(output string, items []*types.ResourceReferenc
 	default:
 		var headerPrinted bool
 		for _, vapp := range items {
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(vapp.Name)
 			} else {
 				if !headerPrinted {

@@ -25,9 +25,9 @@ import (
 
 // listCmd represents the list command
 var (
-	output  string
-	network string
-	listCmd = &cobra.Command{
+	outputFormat string
+	network      string
+	listCmd      = &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"get"},
 		Short:   "This command can list various resources from vcd: vms, vapps, disks, virtual services, etc.",
@@ -47,14 +47,14 @@ var (
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-	listCmd.PersistentFlags().StringVarP(&output, "output", "o", "names", "Output format. One of: (json, yaml, names, columns)")
+	listCmd.PersistentFlags().StringVarP(&outputFormat, "outputFormat", "o", "names", "Output format. One of: (json, yaml, names, columns)")
 }
 
 func validateOutput(cmd *cobra.Command) {
-	switch cmd.Flag("output").Value.String() {
+	switch cmd.Flag("outputFormat").Value.String() {
 	case "json", "yaml", "names", "columns": //no-op
 	default:
-		fmt.Printf("\nunknown value for --output '%s'\n", cmd.Flag("output").Value.String())
+		fmt.Printf("\nunknown value for --outputFormat '%s'\n", cmd.Flag("outputFormat").Value.String())
 		fmt.Printf("use one of the following: [json, yaml, names, columns]\n")
 		os.Exit(1)
 	}

@@ -37,7 +37,7 @@ var (
 				Client: vcdClient,
 			}
 			items := manager.List()
-			manager.Print(output, items)
+			manager.Print(outputFormat, items)
 		},
 	}
 )

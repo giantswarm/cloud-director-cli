@@ -68,8 +68,8 @@ func (manager *VirtualServiceManager) Delete(names []string, failIfAbsent bool, 
 	}
 }
 
-func (manager *VirtualServiceManager) Print(output string, items []*govcd.NsxtAlbVirtualService) {
-	switch output {
+func (manager *VirtualServiceManager) Print(outputFormat string, items []*govcd.NsxtAlbVirtualService) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -77,7 +77,7 @@ func (manager *VirtualServiceManager) Print(output string, items []*govcd.NsxtAl
 	default:
 		var headerPrinted bool
 		for _, svc := range items {
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(svc.NsxtAlbVirtualService.Name)
 			} else {
 				if !headerPrinted {

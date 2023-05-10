@@ -56,8 +56,8 @@ func (manager *DiskManager) Delete(names []string) {
 	}
 }
 
-func (manager *DiskManager) Print(output string, unattached bool, items []*types.DiskRecordType) {
-	switch output {
+func (manager *DiskManager) Print(outputFormat string, unattached bool, items []*types.DiskRecordType) {
+	switch outputFormat {
 	case "json":
 		utils.PrintJson(items)
 	case "yaml":
@@ -68,7 +68,7 @@ func (manager *DiskManager) Print(output string, unattached bool, items []*types
 			if unattached && d.AttachedVmCount > 0 {
 				continue
 			}
-			if output == "names" {
+			if outputFormat == "names" {
 				fmt.Println(d.Name)
 			} else {
 				if !headerPrinted {
