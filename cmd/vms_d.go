@@ -15,6 +15,8 @@ limitations under the License.
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
@@ -49,5 +51,8 @@ var (
 func init() {
 	cleanCmd.AddCommand(delVmsCmd)
 	delVmsCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "vApp whose VMs will be deleted")
-	delVmsCmd.MarkFlagRequired("vapp")
+	err := delVmsCmd.MarkFlagRequired("vapp")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
