@@ -15,6 +15,8 @@ limitations under the License.
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
@@ -22,32 +24,33 @@ import (
 )
 
 var (
-	listVappsCmd = &cobra.Command{
-		Use:     "vapps",
-		Aliases: []string{"vapp", "virtualapp", "virtualapps"},
-		Short:   "List all the vApps",
-		Long: `List all the vApps in the cloud director
+	href            string
+	listMetadataCmd = &cobra.Command{
+		Use:   "metadata",
+		Short: "List metadata of a resources such as vapp",
+		Long: `List metadata of a resources such as vapp
 
 	Example:
 	--------
-	cd-cli list vapp -o=columns
-	NAME                               	ID
-	guppy                              	urn:vcloud:vapp:afe1a37f-4b7d-4c0f-a5f3-14f19bf5f073
-	installation-proxy                 	urn:vcloud:vapp:8994a22f-4870-43d4-8897-6945f2e96d9b
-	gs-eric-vcd                        	urn:vcloud:vapp:26f79f84-908b-4ee8-88a9-36d5066175f8
+	cd-cli list metadata -href="https://mydomain.com/api/vApp/vapp-c7b89940-eece-48c7-8895-883fd347ee3e"
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			manager := vcd.VappManager{
+			manager := vcd.MetadataManager{
 				Client: vcdClient,
 			}
-			items := manager.List()
-			utils.Print(outputFormat, items, "Name",
-				[]string{"NAME", "ID"},
-				[]string{"Name", "ID"})
+			items := manager.List(href)
+			utils.Print(outputFormat, items, "Key",
+				[]string{"KEY", "Value"},
+				[]string{"Key", "TypedValue.Value"})
 		},
 	}
 )
 
 func init() {
-	listCmd.AddCommand(listVappsCmd)
+	listCmd.AddCommand(listMetadataCmd)
+	listMetadataCmd.Flags().StringVar(&href, "href", "", "HREF of a cloud-director resource")
+	err := listMetadataCmd.MarkFlagRequired("href")
+	if err != nil {
+		log.Fatal(err)
+	}
 }

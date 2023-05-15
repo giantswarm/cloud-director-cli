@@ -15,24 +15,26 @@ limitations under the License.
 package vcd
 
 import (
-	"encoding/json"
-	"fmt"
-	"gopkg.in/yaml.v3"
 	"log"
+	"net/http"
+
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
-func PrintJson[T any](items []T) {
-	j, err := json.Marshal(items)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(j))
+type MetadataManager struct {
+	Client *vcdsdk.Client
 }
 
-func PrintYaml[T any](items []T) {
-	y, err := yaml.Marshal(items)
+func (manager *MetadataManager) List(href string) []*types.MetadataEntry {
+	metadata := &types.Metadata{}
+	_, err := manager.Client.VCDClient.Client.ExecuteRequest(href+"/metadata/", http.MethodGet, types.MimeMetaData, "error retrieving metadata: %s", nil, metadata)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(y))
+	// hide for cleaner output
+	for _, item := range metadata.MetadataEntry {
+		item.Link = nil
+	}
+	return metadata.MetadataEntry
 }

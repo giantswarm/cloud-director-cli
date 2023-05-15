@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -37,9 +38,14 @@ var (
 	ingress-vs-nginx-ingress-controller-app--http                                             	192.168.8.4      	UP
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVs(output, verbose, network)
+			manager := vcd.VirtualServiceManager{
+				Client: vcdClient,
+			}
+			items := manager.List(vcd.VirtualServiceListParams{Network: network})
+			utils.Print(outputFormat, items, "name",
+				[]string{"NAME", "IP", "HEALTH"},
+				[]string{"name", "virtualIpAddress", "healthStatus"})
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

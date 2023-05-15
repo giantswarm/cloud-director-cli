@@ -33,7 +33,10 @@ var (
 	cd-cli delete vs sdf -y --failifabsent
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVs(args, failifabsent, yes, verbose, network)
+			manager := vcd.VirtualServiceManager{
+				Client: vcdClient,
+			}
+			manager.Delete(args, failifabsent, network)
 		},
 	}
 )

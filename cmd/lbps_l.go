@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -41,9 +42,14 @@ var (
 	guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                     	ROUND_ROBIN      	3
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintLBPools(output, verbose, network)
+			manager := vcd.LoadBalancerPoolManager{
+				Client: vcdClient,
+			}
+			items := manager.List(vcd.LBListParams{Network: network})
+			utils.Print(outputFormat, items, "name",
+				[]string{"NAME", "ALGOTITHM", "MEMBERS", "ENABLED"},
+				[]string{"name", "algorithm", "memberCount", "enabled"})
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

@@ -4,8 +4,10 @@ go 1.19
 
 require (
 	github.com/spf13/cobra v1.6.1
+	github.com/tidwall/gjson v1.14.4
 	github.com/vmware/cloud-provider-for-cloud-director v1.2.0
 	github.com/vmware/go-vcloud-director/v2 v2.17.0
+	go.hein.dev/go-version v0.1.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -22,7 +24,8 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/peterhellberg/link v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	go.hein.dev/go-version v0.1.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	google.golang.org/appengine v1.6.5 // indirect

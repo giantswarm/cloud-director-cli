@@ -29,7 +29,7 @@ var (
 	format     = "json"
 	versionCmd = &cobra.Command{
 		Use:   "version",
-		Short: "Version will output the current build information",
+		Short: "Version will outputFormat the current build information",
 		Long:  ``,
 		Run: func(_ *cobra.Command, _ []string) {
 			resp := goVersion.FuncWithOutput(shortened, version, gitSha, date, format)
@@ -41,6 +41,6 @@ var (
 
 func init() {
 	versionCmd.Flags().BoolVarP(&shortened, "short", "s", true, "Print just the version number.")
-	versionCmd.Flags().StringVarP(&format, "output", "o", "json", "Output format. One of 'yaml' or 'json'.")
+	versionCmd.Flags().StringVarP(&format, "outputFormat", "o", "json", "Output format. One of 'yaml' or 'json'.")
 	rootCmd.AddCommand(versionCmd)
 }

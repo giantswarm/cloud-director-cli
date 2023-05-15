@@ -15,8 +15,10 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -37,9 +39,16 @@ var (
 	...
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintDisks(output, verbose, unattached)
+			manager := vcd.DiskManager{
+				Client: vcdClient,
+			}
+
+			items := manager.List(vcd.DiskListParams{Unattached: unattached})
+
+			utils.Print(outputFormat, items, "Name",
+				[]string{"NAME", "SIZE(Mb)", "STATUS", "VMs", "TYPE"},
+				[]string{"Name", "SizeMb", "Status", "AttachedVmCount", "BusTypeDesc"})
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

@@ -15,8 +15,10 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -32,9 +34,14 @@ var (
 
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintAports(output, verbose)
+			manager := vcd.AppPortManager{
+				Client: vcdClient,
+			}
+			items := manager.List()
+			utils.Print(outputFormat, items, "name",
+				[]string{"NAME", "PROTOCOL", "PORTS"},
+				[]string{"name", "applicationPorts.0.protocol", "applicationPorts.0.destinationPorts.0"})
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

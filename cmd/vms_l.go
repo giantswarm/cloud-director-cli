@@ -15,8 +15,10 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 var (
@@ -40,9 +42,17 @@ var (
 	squid-proxy
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.PrintVMs(output, verbose, onlyTemplates, vapp)
+			manager := vcd.VmManager{
+				Client: vcdClient,
+			}
+			items := manager.List(vcd.VmListParams{
+				OnlyTemplate: onlyTemplates,
+				Vapp:         vapp,
+			})
+			utils.Print(outputFormat, items, "Name",
+				[]string{"NAME", "VAPP", "STATUS", "DEPLOYED", "IP"},
+				[]string{"Name", "ContainerName", "Status", "Deployed", "IpAddress"})
 		},
-		PreRun: ValidateOutput,
 	}
 )
 

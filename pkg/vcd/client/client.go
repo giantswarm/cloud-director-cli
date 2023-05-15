@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package vcd
+package client
 
 import (
 	"fmt"
@@ -106,4 +106,13 @@ func makeClient(cfg *Config, items bool) (*vcdsdk.Client, error) {
 func (cache *Cache) CachedClient(items bool) (*vcdsdk.Client, error) {
 	cache.lazyInit(items)
 	return cache.client, nil
+}
+
+func NewClient(verbose bool) *vcdsdk.Client {
+	cache := Cache{}
+	c, e := cache.CachedClient(verbose)
+	if e != nil {
+		log.Fatal(e)
+	}
+	return c
 }

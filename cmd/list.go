@@ -19,12 +19,14 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/client"
 )
 
 // listCmd represents the list command
 var (
-	output  string
 	network string
+
 	listCmd = &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"get"},
@@ -36,20 +38,23 @@ var (
 	cd-cli list vms -v
 	cd-cli list disks
 `,
-		PreRun: ValidateOutput,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			vcdClient = client.NewClient(verbose)
+			validateOutput(cmd)
+		},
 	}
 )
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-	listCmd.PersistentFlags().StringVarP(&output, "output", "o", "names", "Output format. One of: (json, yaml, names, columns)")
+	listCmd.PersistentFlags().StringVarP(&outputFormat, "outputFormat", "o", "names", "Output format. One of: (json, yaml, names, columns)")
 }
 
-func ValidateOutput(cmd *cobra.Command, _ []string) {
-	switch cmd.Flag("output").Value.String() {
+func validateOutput(cmd *cobra.Command) {
+	switch cmd.Flag("outputFormat").Value.String() {
 	case "json", "yaml", "names", "columns": //no-op
 	default:
-		fmt.Printf("\nunknown value for --output '%s'\n", cmd.Flag("output").Value.String())
+		fmt.Printf("\nunknown value for --outputFormat '%s'\n", cmd.Flag("outputFormat").Value.String())
 		fmt.Printf("use one of the following: [json, yaml, names, columns]\n")
 		os.Exit(1)
 	}

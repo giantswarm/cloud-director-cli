@@ -33,7 +33,10 @@ var (
 	cd-cli delete lbp sdf -y --failifabsent --cascade
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteLBPool(args, failifabsent, yes, verbose, cascade, network)
+			manager := vcd.LoadBalancerPoolManager{
+				Client: vcdClient,
+			}
+			manager.Delete(args, failifabsent, verbose, cascade, network)
 		},
 	}
 )

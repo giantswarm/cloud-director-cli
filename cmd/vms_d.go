@@ -15,13 +15,15 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
+	"log"
+
 	"github.com/spf13/cobra"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd"
 )
 
 var (
 	onlyTemplates bool
-	yes           bool
 	delVmsCmd     = &cobra.Command{
 		Use:     "vms -a vAppName VMname... ",
 		Aliases: []string{"vm"},
@@ -38,7 +40,10 @@ var (
 	cd-cli clean vms -y --vapp=jiri3 jiri3-worker-7b4d46494-8rj59 jiri3-worker-7b4d46494-p6vhp
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			vcd.DeleteVMs(args, vapp, yes, verbose)
+			manager := vcd.VmManager{
+				Client: vcdClient,
+			}
+			manager.Delete(args, vapp)
 		},
 	}
 )
@@ -46,5 +51,8 @@ var (
 func init() {
 	cleanCmd.AddCommand(delVmsCmd)
 	delVmsCmd.Flags().StringVarP(&vapp, "vapp", "a", "", "vApp whose VMs will be deleted")
-	delVmsCmd.MarkFlagRequired("vapp")
+	err := delVmsCmd.MarkFlagRequired("vapp")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
