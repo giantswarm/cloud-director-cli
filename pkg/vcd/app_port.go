@@ -15,6 +15,7 @@ limitations under the License.
 package vcd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
@@ -47,6 +48,7 @@ func (manager *AppPortManager) List() []*types.NsxtAppPortProfile {
 func (manager *AppPortManager) Delete(names []string, failIfAbsent bool, network string) {
 	gateway := getGatewayManager(manager.Client, network)
 	for _, a := range names {
+		fmt.Printf("Deleting app port:[%s]\n", a)
 		err := gateway.DeleteAppPortProfile(a, failIfAbsent)
 		if err != nil {
 			log.Fatal(err)

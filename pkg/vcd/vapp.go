@@ -15,6 +15,7 @@ limitations under the License.
 package vcd
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 
@@ -43,6 +44,7 @@ func (manager *VappManager) Delete(names []string) {
 	}
 
 	for _, name := range names {
+		fmt.Printf("Deleting vApp:[%s]\n", name)
 		err = m.DeleteVApp(name)
 		if err != nil {
 			log.Fatal(err)

@@ -63,6 +63,7 @@ func (manager *VmManager) Delete(names []string, vapp string) {
 	}
 
 	for _, vmName := range names {
+		fmt.Printf("Deleting vm:[%s]\n", vmName)
 		vm, err := vApp.GetVMByName(vmName, true)
 		if err != nil {
 			log.Fatal(fmt.Errorf("unable to get vm [%s] in vApp [%s]: [%v]", vmName, vmName, err))

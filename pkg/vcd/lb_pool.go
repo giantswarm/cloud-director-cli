@@ -55,6 +55,7 @@ func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool
 	}
 
 	for _, lb := range names {
+		fmt.Printf("Deleting load balancer pool:[%s]\n", lb)
 		err := gateway.DeleteLoadBalancerPool(context.Background(), lb, failIfAbsent)
 		if err != nil {
 			if strings.Contains(err.Error(), "obtained [400]") {

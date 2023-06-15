@@ -48,6 +48,7 @@ func (manager *DiskManager) List(params DiskListParams) []*types.DiskRecordType 
 
 func (manager *DiskManager) Delete(names []string, detach bool) {
 	for _, name := range names {
+		fmt.Printf("Deleting disk:[%s]\n", name)
 		disks, err := manager.Client.VDC.GetDisksByName(name, false)
 		if err != nil {
 			log.Fatal(err)
