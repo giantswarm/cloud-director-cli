@@ -20,6 +20,7 @@ import (
 	"net/url"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
@@ -45,13 +46,20 @@ func (manager *DiskManager) List(params DiskListParams) []*types.DiskRecordType 
 	return results.Results.DiskRecord
 }
 
-func (manager *DiskManager) Delete(names []string) {
+func (manager *DiskManager) Delete(names []string, detach bool) {
 	for _, name := range names {
 		disks, err := manager.Client.VDC.GetDisksByName(name, false)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, d := range *disks {
+			if detach {
+				e := manager.detachFromAllVMs(&d)
+				if e != nil {
+					log.Fatal(e)
+				}
+			}
+
 			t, e := d.Delete()
 			if e != nil {
 				log.Fatal(e)
@@ -59,4 +67,37 @@ func (manager *DiskManager) Delete(names []string) {
 			fmt.Printf("delete task was created: %s\n", t.Task.ID)
 		}
 	}
+}
+
+func (manager *DiskManager) detachFromAllVMs(d *govcd.Disk) error {
+	params := &types.DiskAttachOrDetachParams{
+		Disk: &types.Reference{HREF: d.Disk.HREF},
+	}
+
+	vmHrefs, err := d.GetAttachedVmsHrefs()
+	if err != nil {
+		return fmt.Errorf("unable to get attached vms from disk: [%s]", d.Disk.Name)
+	}
+
+	for _, vmHref := range vmHrefs {
+		vm, err := manager.Client.VCDClient.Client.GetVMByHref(vmHref)
+		if err != nil {
+			return fmt.Errorf("unable to get vm by href: [%s]", vmHref)
+		}
+
+		fmt.Printf("Detaching disk:[%s] from vm:[%s]\n", d.Disk.Name, vm.VM.Name)
+		task, err := vm.DetachDisk(params)
+		if err != nil {
+			return fmt.Errorf("unable to create task to detack disk: [%v]", err)
+		}
+
+		err = task.WaitTaskCompletion()
+		if err != nil {
+			return fmt.Errorf("unable to detack disk: [%v]", err)
+		}
+
+	}
+
+	// refresh before deleting to fetch "remove" links
+	return d.Refresh()
 }

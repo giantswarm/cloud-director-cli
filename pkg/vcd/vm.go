@@ -15,7 +15,10 @@ limitations under the License.
 package vcd
 
 import (
+	"fmt"
 	"log"
+
+	"github.com/vmware/go-vcloud-director/v2/govcd"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 
@@ -54,14 +57,33 @@ func (manager *VmManager) List(params VmListParams) []*types.QueryResultVMRecord
 }
 
 func (manager *VmManager) Delete(names []string, vapp string) {
-	m, err := vcdsdk.NewVDCManager(manager.Client, "", "")
+	vApp, err := manager.Client.VDC.GetVAppByName(vapp, true)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("unable to find vApp from name [%s]: [%v]", vapp, err))
 	}
-	for _, vm := range names {
-		err = m.DeleteVM(vapp, vm)
+
+	for _, vmName := range names {
+		vm, err := vApp.GetVMByName(vmName, true)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(fmt.Errorf("unable to get vm [%s] in vApp [%s]: [%v]", vmName, vmName, err))
+		}
+
+		ensureThereIsNoAttachedDisk(vm)
+
+		if err = vm.Delete(); err != nil {
+			log.Fatal(fmt.Errorf("unable to delete vm [%s] in vApp [%s]: [%v]", vmName, vapp, err))
+		}
+	}
+}
+
+// inspired from https://github.com/giantswarm/cluster-api-provider-cloud-director/blob/a40b68e4b395ed04edb24c8e3b6e0e11cd9d4087/controllers/vcdmachine_controller.go#L1261
+func ensureThereIsNoAttachedDisk(vm *govcd.VM) {
+	if vm.VM.VmSpecSection != nil && vm.VM.VmSpecSection.DiskSection != nil {
+		for _, diskSettings := range vm.VM.VmSpecSection.DiskSection.DiskSettings {
+			if diskSettings.Disk != nil {
+				log.Fatal(fmt.Sprintf("Cannot delete VM when there is an attached disk. vm:[%s] disk:[%s]",
+					vm.VM.Name, diskSettings.Disk.Name))
+			}
 		}
 	}
 }
