@@ -68,6 +68,7 @@ func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager 
 func (manager *VirtualServiceManager) Delete(names []string, failIfAbsent bool, network string) {
 	gateway := getGatewayManager(manager.Client, network)
 	for _, vs := range names {
+		fmt.Printf("Deleting virtual service:[%s]\n", vs)
 		err := gateway.DeleteVirtualService(context.Background(), vs, failIfAbsent)
 		if err != nil {
 			log.Fatal(err)

@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	detach      bool
 	delDisksCmd = &cobra.Command{
 		Use:     "disks diskname...",
 		Aliases: []string{"disk"},
@@ -35,7 +36,7 @@ var (
 			manager := vcd.DiskManager{
 				Client: vcdClient,
 			}
-			manager.Delete(args)
+			manager.Delete(args, detach)
 		},
 	}
 )
@@ -43,4 +44,5 @@ var (
 func init() {
 	cleanCmd.AddCommand(delDisksCmd)
 	delDisksCmd.Flags().BoolVar(&failifabsent, "failifabsent", false, "command will return non-zero code if the load balancer pool is not there")
+	delDisksCmd.Flags().BoolVar(&detach, "detach", false, "detach all attached VMs before deletion")
 }
