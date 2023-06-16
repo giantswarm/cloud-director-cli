@@ -39,7 +39,7 @@ var (
 	cd-cli list disks
 `,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			vcdClient = client.NewClient(verbose)
+			vcdClient = client.NewClient(verbose, context)
 			validateOutput(cmd)
 		},
 	}

@@ -43,7 +43,7 @@ var cleanCmd = &cobra.Command{
 	cd-cli clean virtualservice --assumeyes guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		vcdClient = client.NewClient(verbose)
+		vcdClient = client.NewClient(verbose, context)
 		ensureDeletion(assumeYes, args)
 	},
 }
