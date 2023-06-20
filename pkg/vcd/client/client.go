@@ -49,9 +49,10 @@ func makeClient(allContexts *Config, verbose bool, context string) (*vcdsdk.Clie
 		currentContext = allContexts.CurrentContext
 	}
 	if len(currentContext) == 0 {
-		// current context is not specified, take the first occurende in the cfg file
+		// current context is not specified, take the first occurence in the cfg file
 		if len(allContexts.Contexts) > 0 {
 			cfg = &allContexts.Contexts[0]
+			currentContext = cfg.Name
 		}
 	} else {
 		for _, c := range allContexts.Contexts {
