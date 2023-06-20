@@ -24,10 +24,13 @@ and put it to your `$PATH`.
 
 ```bash
 cat ~/.cd-cli/config.yaml
-refreshToken: ***
-site: https://vmware.ikoula.com
-org: giantswarm
-ovdc: vDC 73640
+contexts:
+    - name: ikoula
+      refreshToken: ***
+      site: https://vmware.ikoula.com
+      org: giantswarm
+      ovdc: vDC 73640
+currentContext: ikoula
 ```
 
 HINT: when using w/ CAPVCD provider, you can get the `refreshToken` from k8s secret 

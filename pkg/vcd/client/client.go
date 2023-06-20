@@ -22,77 +22,57 @@ import (
 	"sync"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"gopkg.in/yaml.v3"
 )
-
-const (
-	config_env   = "CDCLI_CONFIG"
-	home_env     = "HOME"
-	cfg_dirname  = ".cd-cli"
-	cfg_filename = "config.yaml"
-)
-
-type Config struct {
-	RefreshToken string `yaml:"refreshToken,omitempty"`
-	Org          string `yaml:"org,omitempty"`
-	Site         string `yaml:"site"`
-	Ovdc         string `yaml:"ovdc,omitempty"`
-	Insecure     bool   `yaml:"insecure,omitempty"`
-	Username     string `yaml:"username,omitempty"`
-	Password     string `yaml:"password,omitempty"`
-}
 
 type Cache struct {
 	atStart sync.Once
 	client  *vcdsdk.Client
 }
 
-func (cache *Cache) lazyInit(items bool) {
+func (cache *Cache) lazyInit(verbose bool, context string) {
 	cache.atStart.Do(func() {
 		cfg, err := parseConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		cache.client, err = makeClient(cfg, items)
+		cache.client, err = makeClient(cfg, verbose, context)
 		if err != nil {
 			log.Fatal(err)
 		}
 	})
 }
 
-// it assumes the config to be placed in ~/.cd-cli/config.yaml
-// or under path contained in $CDCLI_CONFIG env var
-func parseConfig() (*Config, error) {
-	var path string
-	path, found := os.LookupEnv(config_env)
-	if !found {
-		p, foundHome := os.LookupEnv(home_env)
-		path = fmt.Sprintf("%s/%s/%s", p, cfg_dirname, cfg_filename)
-		if !foundHome {
-			log.Fatal(fmt.Sprintf("Place your config to $%s/%s/%s or set %s", home_env, cfg_dirname, cfg_filename, config_env))
+func makeClient(allContexts *Config, verbose bool, context string) (*vcdsdk.Client, error) {
+	var cfg *VCDInfo
+	currentContext := context
+	if len(currentContext) == 0 {
+		currentContext = allContexts.CurrentContext
+	}
+	if len(currentContext) == 0 {
+		// current context is not specified, take the first occurence in the cfg file
+		if len(allContexts.Contexts) > 0 {
+			cfg = &allContexts.Contexts[0]
+			currentContext = cfg.Name
+		}
+	} else {
+		for _, c := range allContexts.Contexts {
+			if c.Name == currentContext {
+				cfg = &c
+				break
+			}
+		}
+		if cfg == nil {
+			return nil, fmt.Errorf("Context with name '%s' was not found in the config file", currentContext)
 		}
 	}
-	yfile, err := os.ReadFile(fmt.Sprintf("%s", path))
-	if err != nil {
-		log.Fatal(fmt.Errorf("Unable to open configuration file, make sure it exist (~/.cd-cli/config.yaml)\n%w", err))
-	}
-	data := &Config{}
-	err2 := yaml.Unmarshal(yfile, &data)
-
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-
-	return data, nil
-}
-
-func makeClient(cfg *Config, items bool) (*vcdsdk.Client, error) {
 	_, err := url.ParseRequestURI(cfg.Site)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse site url: %s", err)
 	}
-	if !items { // the underlying vcd client prints a lot of messages to stderr
+	if !verbose { // the underlying vcd client prints a lot of messages to stderr
 		os.Stderr = nil
+	} else {
+		fmt.Printf("Using context: '%s'\nsite: '%s'\n", currentContext, cfg.Site)
 	}
 	client, err := vcdsdk.NewVCDClientFromSecrets(cfg.Site, cfg.Org,
 		cfg.Ovdc, cfg.Org, cfg.Username, cfg.Password, cfg.RefreshToken, cfg.Insecure, true)
@@ -103,14 +83,14 @@ func makeClient(cfg *Config, items bool) (*vcdsdk.Client, error) {
 	return client, nil
 }
 
-func (cache *Cache) CachedClient(items bool) (*vcdsdk.Client, error) {
-	cache.lazyInit(items)
+func (cache *Cache) CachedClient(verbose bool, context string) (*vcdsdk.Client, error) {
+	cache.lazyInit(verbose, context)
 	return cache.client, nil
 }
 
-func NewClient(verbose bool) *vcdsdk.Client {
+func NewClient(verbose bool, context string) *vcdsdk.Client {
 	cache := Cache{}
-	c, e := cache.CachedClient(verbose)
+	c, e := cache.CachedClient(verbose, context)
 	if e != nil {
 		log.Fatal(e)
 	}

@@ -25,6 +25,7 @@ import (
 var (
 	verbose      bool
 	outputFormat string
+	context      string
 	vcdClient    *vcdsdk.Client
 	rootCmd      = &cobra.Command{
 		Use:   "cd-cli",
@@ -51,4 +52,5 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Use verbose outputFormat")
+	rootCmd.PersistentFlags().StringVarP(&context, "context", "c", "", "Specify the current context in the configuration")
 }
