@@ -154,15 +154,15 @@ listing:
 
 ```bash
 cd-cli list vs -ocolumns
-NAME                                                                                      	IP               	HEALTH
-gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                               	178.170.32.55    	UP
-ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http  	192.168.8.6      	UP
-ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-https 	192.168.8.7      	UP
-ingress-vs-nginx-ingress-controller-app--http                                             	192.168.8.4      	UP
-ingress-vs-nginx-ingress-controller-app--https                                            	192.168.8.5      	UP
-guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                     	178.170.32.23    	UP
-ingress-vs-nginx-ingress-controller-app-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-http  	192.168.8.2      	UP
-ingress-vs-nginx-ingress-controller-app-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-https 	192.168.8.3      	UP
+NAME                                                                                    IP               	HEALTH
+gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                             178.170.32.55    	UP
+ingress-vs-ingress-nginx-controller-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http    192.168.8.6      	UP
+ingress-vs-ingress-nginx-controller-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-https   192.168.8.7      	UP
+ingress-vs-ingress-nginx-controller--http                                               192.168.8.4      	UP
+ingress-vs-ingress-nginx-controller--https                                              192.168.8.5      	UP
+guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                   178.170.32.23    	UP
+ingress-vs-ingress-nginx-controller-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-http    192.168.8.2      	UP
+ingress-vs-ingress-nginx-controller-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-https   192.168.8.3      	UP
 ```
 
 deleting:
@@ -183,11 +183,11 @@ listing:
 
 ```bash
 cd-cli list lbps -ocolumns
-NAME                                                                                      	ALGOTITHM        	MEMBERS
-ingress-pool-nginx-ingress-controller-app--http                                           	LEAST_CONNECTIONS	6
-ingress-pool-nginx-ingress-controller-app--https                                          	LEAST_CONNECTIONS	6
-gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                               	ROUND_ROBIN      	1
-guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                     	ROUND_ROBIN      	3
+NAME                                                                                        ALGOTITHM        	MEMBERS
+ingress-pool-ingress-nginx-controller--http                                                 LEAST_CONNECTIONS	6
+ingress-pool-ingress-nginx-controller--https                                                LEAST_CONNECTIONS	6
+gs-eric-vcd-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-tcp                                 ROUND_ROBIN      	1
+guppy-NO_RDE_ca501275-f986-4d50-a6ec-e084341d15d2-tcp                                       ROUND_ROBIN      	3
 ```
 
 deleting:
@@ -202,18 +202,18 @@ listing:
 
 ```bash
 cd-cli get aports -ocolumns
-NAME                                                                                                          	PROTOCOL	PORTS
-appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http         	TCP     	80
-appPort_dnat-ingress-vs-nginx-ingress-controller-app--http                                                    	TCP     	80
+NAME                                                                                                            PROTOCOL	PORTS
+appPort_dnat-ingress-vs-ingress-nginx-controller-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http               TCP     	80
+appPort_dnat-ingress-vs-ingress-nginx-controller--http                                                          TCP     	80
 appPort_dnat-ingress-vs-nginx-NO_RDE_1c2691d0-4fcb-494d-99da-97e7122c78fb-                                    	TCP     	80
-appPort_dnat-ingress-vs-nginx-NO_RDE_6a38fa74-b052-481a-82ea-efc803970e2c-                                    	TCP     	80
-appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http         	TCP     	80
-appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_40a12562-719b-44a4-b70e-2a026adaef1d-https        	TCP     	443
+appPort_dnat-ingress-vs-nginx-NO_RDE_6a38fa74-b052-481a-82ea-efc803970e2c-                                      TCP     	80
+appPort_dnat-ingress-vs-ingress-nginx-controller-NO_RDE_b03a4df5-585f-48a9-8916-d378c44b7c16-http               TCP     	80
+appPort_dnat-ingress-vs-ingress-nginx-controller-NO_RDE_40a12562-719b-44a4-b70e-2a026adaef1d-https              TCP     	443
 ```
 
 deleting:
 
 ```bash
 cd-cli delete aports -y appPort_dnat-ingress-vs-nginx-NO_RDE_1c2691d0-4fcb-494d-99da-97e7122c78fb- \
-                        appPort_dnat-ingress-vs-nginx-ingress-controller-app-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http
+                        appPort_dnat-ingress-vs-ingress-nginx-controller-NO_RDE_6badbdb8-fdc6-4ea8-93aa-5458c45fddf6-http
 ```
