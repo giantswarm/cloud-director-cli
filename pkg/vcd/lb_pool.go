@@ -17,12 +17,9 @@ package vcd
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"strings"
-
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
+	"log"
 )
 
 type LoadBalancerPoolManager struct {
@@ -50,26 +47,26 @@ func (manager *LoadBalancerPoolManager) List(params LBListParams) []*types.NsxtA
 
 func (manager *LoadBalancerPoolManager) Delete(names []string, failIfAbsent bool, verbose bool, cascade bool, network string) {
 	gateway := getGatewayManager(manager.Client, network)
-	vsManager := VirtualServiceManager{
-		Client: manager.Client,
-	}
 
 	for _, lb := range names {
+		if cascade {
+			albPool, err := manager.Client.VCDClient.GetAlbPoolByName(gateway.GatewayRef.Id, lb)
+			if err != nil {
+				log.Fatal(fmt.Errorf("unable to get load balancer pool [%s]: [%v]", lb, err))
+			}
+			for _, vssRef := range albPool.NsxtAlbPool.VirtualServiceRefs {
+				fmt.Printf("Cascading virtual service:[%s]\n", vssRef.Name)
+				err = gateway.DeleteVirtualService(context.Background(), vssRef.Name, false)
+				if err != nil {
+					log.Fatal(fmt.Errorf("unable to delete virtual service [%s]: [%v]", vssRef.Name, err))
+				}
+			}
+		}
+
 		fmt.Printf("Deleting load balancer pool:[%s]\n", lb)
 		err := gateway.DeleteLoadBalancerPool(context.Background(), lb, failIfAbsent)
 		if err != nil {
-			if strings.Contains(err.Error(), "obtained [400]") {
-				if !cascade {
-					fmt.Fprintf(os.Stderr, "First delete the associated virtual service\n")
-					log.Fatal(err)
-				}
-				// try to delete the associated virtual services first and then re-try
-				fmt.Printf("Trying to delete the Virtual Services %v first\n", names)
-				vsManager.Delete(names, failIfAbsent, network)
-				manager.Delete(names, failIfAbsent, verbose, false, network)
-			} else {
-				log.Fatal(err)
-			}
+			log.Fatal(fmt.Errorf("unable to delete load balancer pool [%s]: [%v]", lb, err))
 		}
 	}
 }
