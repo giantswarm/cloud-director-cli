@@ -15,7 +15,7 @@ jobs:
     env:
       COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
     steps:
-      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
@@ -25,12 +25,12 @@ jobs:
           go-version: ${{ env.GOLANG_VERSION }}
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@7bca8b41164994a7dc93749d266e2f1db492f8a2
+        uses: sigstore/cosign-installer@cc23fe1cf04164ea4c208611cf647a013c6f8cc5
         with:
           cosign-release: 'v1.12.1'
 
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@b7e8507c6a3c89b7099a0198366d862c8f3ad8f1 # tag=v0.13.0
+        uses: anchore/sbom-action/download-syft@d94f46e13c6c62f59525ac9a1e147a99dc0b9bf5 # v0.17.0
 
       - name: Install signing key
         run: |
