@@ -11,11 +11,11 @@ env:
 jobs:
   release:
     name: Release & Sign
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 
@@ -37,7 +37,7 @@ jobs:
           echo '${{ secrets.COSIGN_PRIVATE_KEY }}' > cosign.key
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # tag=v3
+        uses: goreleaser/goreleaser-action@286f3b13b1b49da4ac219696163fb8c1c93e1200 # v6
         with:
           version: v1.9.2
           args: release --rm-dist
