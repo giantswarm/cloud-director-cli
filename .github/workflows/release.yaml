@@ -42,6 +42,7 @@ jobs:
           version: v1.9.2
           args: release --rm-dist
         env:
+          # cloud-director-cli-release-token in taylorbot account
           GITHUB_TOKEN: ${{ secrets.RELEASER_TOKEN }}
 
       - name: Cleanup signing keys
