@@ -18,9 +18,12 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 type VappManager struct {
@@ -29,12 +32,23 @@ type VappManager struct {
 
 func (manager *VappManager) List() []*types.QueryResultVAppRecordType {
 	filter := "vdc==" + url.QueryEscape(manager.Client.VDC.Vdc.HREF)
-	notEncodedParams := map[string]string{"type": "vApp", "filter": filter, "filterEncoded": "true"}
-	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
-	if err != nil {
-		log.Fatal(err)
+
+	results := make([]*types.QueryResultVAppRecordType, 0)
+	page := 1
+	for {
+		notEncodedParams := map[string]string{"type": "vApp", "filter": filter, "filterEncoded": "true", "page": strconv.Itoa(page)}
+		pageResult, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, pageResult.Results.VAppRecord...)
+		page++
+
+		if !utils.HasNextPageLink(pageResult.Results.Link) {
+			break
+		}
 	}
-	return results.Results.VAppRecord
+	return results
 }
 
 func (manager *VappManager) Delete(names []string) {

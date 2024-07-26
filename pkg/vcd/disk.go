@@ -18,10 +18,13 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
+
+	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 )
 
 type DiskManager struct {
@@ -37,13 +40,24 @@ func (manager *DiskManager) List(params DiskListParams) []*types.DiskRecordType 
 	if params.Unattached {
 		filter = filter + ",attachedVmCount==0"
 	}
-	notEncodedParams := map[string]string{"type": "disk", "filter": filter, "filterEncoded": "true"}
-	results, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
-	if err != nil {
-		log.Fatal(err)
+
+	results := make([]*types.DiskRecordType, 0)
+	page := 1
+	for {
+		notEncodedParams := map[string]string{"type": "disk", "filter": filter, "filterEncoded": "true", "page": strconv.Itoa(page)}
+		pageResult, err := manager.Client.VDC.QueryWithNotEncodedParams(nil, notEncodedParams)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, pageResult.Results.DiskRecord...)
+		page++
+
+		if !utils.HasNextPageLink(pageResult.Results.Link) {
+			break
+		}
 	}
 
-	return results.Results.DiskRecord
+	return results
 }
 
 func (manager *DiskManager) Delete(names []string, detach bool) {
