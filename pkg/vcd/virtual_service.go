@@ -58,7 +58,7 @@ func getGatewayManager(c *vcdsdk.Client, network string) *vcdsdk.GatewayManager 
 		network = nw[0].Name
 	}
 
-	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, network, "")
+	gateway, err := vcdsdk.NewGatewayManager(context.Background(), c, network, "", c.ClusterOVDCName)
 	if err != nil {
 		log.Fatal(err)
 	}
