@@ -1,12 +1,10 @@
 module github.com/giantswarm/cloud-director-cli
 
-go 1.22
-
-toolchain go1.22.5
+go 1.23
 
 require (
 	github.com/spf13/cobra v1.8.1
-	github.com/tidwall/gjson v1.17.1
+	github.com/tidwall/gjson v1.19.0
 	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240725204714-a0a0e916a5ed
 	github.com/vmware/go-vcloud-director/v2 v2.26.1
 	go.hein.dev/go-version v0.1.0
