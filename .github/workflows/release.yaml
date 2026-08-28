@@ -30,7 +30,7 @@ jobs:
           cosign-release: 'v1.12.1'
 
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@d94f46e13c6c62f59525ac9a1e147a99dc0b9bf5 # v0.17.0
+        uses: anchore/sbom-action/download-syft@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
 
       - name: Install signing key
         run: |
