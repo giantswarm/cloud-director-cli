@@ -12,6 +12,8 @@ jobs:
   release:
     name: Release & Sign
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     env:
       COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
     steps:
@@ -36,14 +38,27 @@ jobs:
         run: |
           echo '${{ secrets.COSIGN_PRIVATE_KEY }}' > cosign.key
 
+      # One token for both repositories GoReleaser writes to: the GitHub
+      # release here and the formula in the homebrew-cd-cli tap. The
+      # giantswarm-release App is in the tap's main bypass list, so the
+      # formula commit goes in without a pull request review.
+      - name: Generate giantswarm-release token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.RELEASE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+          owner: giantswarm
+          repositories: cloud-director-cli,homebrew-cd-cli
+          permission-contents: write
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # tag=v3
         with:
           version: v1.9.2
           args: release --rm-dist
         env:
-          # cloud-director-cli-release-token in taylorbot account
-          GITHUB_TOKEN: ${{ secrets.RELEASER_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Cleanup signing keys
         if: ${{ always() }}
