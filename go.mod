@@ -6,7 +6,7 @@ toolchain go1.26.10
 
 require (
 	github.com/spf13/cobra v1.10.2
-	github.com/tidwall/gjson v1.17.1
+	github.com/tidwall/gjson v1.20.0
 	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240725204714-a0a0e916a5ed
 	github.com/vmware/go-vcloud-director/v2 v2.26.2
 	go.hein.dev/go-version v0.1.0
