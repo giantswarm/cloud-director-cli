@@ -138,8 +138,8 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240725204714-a0a0e916a5ed h1:JTJVcpsOFI4VaHfPiHKZPepgMU+up9gidp7yRDy2/rs=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240725204714-a0a0e916a5ed/go.mod h1:aZDliFAerzbmI6pL3bd1R53CEXJkNKkWgdM5q337rAw=
-github.com/vmware/go-vcloud-director/v2 v2.26.1 h1:NMhV0nrLxdjfUjE89txI8P+rjWM3oxhO7o6I4w/MvGA=
-github.com/vmware/go-vcloud-director/v2 v2.26.1/go.mod h1:7Of1qJja+LLNKVegjZG7uuhhy6xgGg3q7Fkw2CEP+Tw=
+github.com/vmware/go-vcloud-director/v2 v2.26.2 h1:3AAtDWE94UwJSN2oGFLuI+LEkFL449DL+IRwaLA2FFQ=
+github.com/vmware/go-vcloud-director/v2 v2.26.2/go.mod h1:7Of1qJja+LLNKVegjZG7uuhhy6xgGg3q7Fkw2CEP+Tw=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
