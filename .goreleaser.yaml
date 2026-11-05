@@ -35,7 +35,9 @@ signs:
       - sign-blob
       - --key
       - cosign.key
-      - '--output-certificate=${certificate}'
+      - --new-bundle-format=false
+      - --use-signing-config=false
+      - --tlog-upload=false
       - '--output-signature=${signature}'
       - '${artifact}'
   - id: binaries
@@ -47,7 +49,9 @@ signs:
       - sign-blob
       - --key
       - cosign.key
-      - '--output-certificate=${certificate}'
+      - --new-bundle-format=false
+      - --use-signing-config=false
+      - --tlog-upload=false
       - '--output-signature=${signature}'
       - '${artifact}'
   - id: archives
@@ -59,7 +63,9 @@ signs:
       - sign-blob
       - --key
       - cosign.key
-      - '--output-certificate=${certificate}'
+      - --new-bundle-format=false
+      - --use-signing-config=false
+      - --tlog-upload=false
       - '--output-signature=${signature}'
       - '${artifact}'
   - id: sboms
@@ -71,7 +77,9 @@ signs:
       - sign-blob
       - --key
       - cosign.key
-      - '--output-certificate=${certificate}'
+      - --new-bundle-format=false
+      - --use-signing-config=false
+      - --tlog-upload=false
       - '--output-signature=${signature}'
       - '${artifact}'
 brews:
