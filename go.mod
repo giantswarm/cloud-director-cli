@@ -7,7 +7,7 @@ toolchain go1.26.10
 require (
 	github.com/spf13/cobra v1.10.2
 	github.com/tidwall/gjson v1.20.0
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240725204714-a0a0e916a5ed
+	github.com/vmware/cloud-provider-for-cloud-director v1.2.0
 	github.com/vmware/go-vcloud-director/v2 v2.26.2
 	go.hein.dev/go-version v0.1.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -24,7 +24,6 @@ require (
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/peterhellberg/link v1.1.0 // indirect
-	github.com/sethvargo/go-password v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
