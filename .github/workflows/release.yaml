@@ -5,9 +5,6 @@ on:
     tags:
       - "v*"
 
-env:
-  GOLANG_VERSION: 1.26.10
-
 jobs:
   release:
     name: Release & Sign
@@ -24,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: ${{ env.GOLANG_VERSION }}
+          go-version-file: go.mod
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@cc23fe1cf04164ea4c208611cf647a013c6f8cc5
