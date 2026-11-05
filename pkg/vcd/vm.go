@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v3/govcd"
 
 	"github.com/giantswarm/cloud-director-cli/pkg/vcd/utils"
 
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"github.com/vmware/go-vcloud-director/v2/types/v56"
+	"github.com/vmware/go-vcloud-director/v3/types/v56"
 )
 
 type VmManager struct {
